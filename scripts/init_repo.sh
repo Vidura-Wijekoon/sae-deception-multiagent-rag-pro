@@ -25,12 +25,12 @@ cd "$REPO_ROOT"
 echo "==> Working from: $REPO_ROOT"
 
 # ----- 1. Create directory skeleton --------------------------------
-echo "==> Creating directory skeleton"
+echo "==> Creating directory skeleton (src/ layout — package at src/sae_deception/)"
 DIRS=(
-  "src/pipeline"
-  "src/probes"
-  "src/attacks"
-  "src/interp"
+  "src/sae_deception/pipeline"
+  "src/sae_deception/probes"
+  "src/sae_deception/attacks"
+  "src/sae_deception/interp"
   "configs"
   "experiments"
   "notebooks"
@@ -51,11 +51,11 @@ for d in "${DIRS[@]}"; do
 done
 
 # ----- 2. Stub Python packages -------------------------------------
-echo "==> Creating empty __init__.py for src subpackages"
+echo "==> Creating empty __init__.py files inside src/sae_deception"
+touch "src/sae_deception/__init__.py"
 for pkg in pipeline probes attacks interp; do
-  touch "src/$pkg/__init__.py"
+  touch "src/sae_deception/$pkg/__init__.py"
 done
-touch "src/__init__.py"
 
 # ----- 3. Git init -------------------------------------------------
 if [ ! -d .git ]; then
@@ -96,7 +96,7 @@ cat <<'EOF'
         gh repo create sae-deception-multiagent-rag --private --source=. --remote=origin --push
 
       Or do it manually on github.com, then:
-        git remote add origin git@github.com:<your-handle>/sae-deception-multiagent-rag.git
+        git remote add origin git@github.com:Vidura-Wijekoon/sae-deception-multiagent-rag.git
         git push -u origin main
 
    3. Confirm Phase 0 step 1 is complete in your tracker, and move on to step 2.

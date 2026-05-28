@@ -74,26 +74,33 @@ Spelled out so you can falsify them rather than discover them empirically:
 
 ```
 sae-deception-multiagent-rag/
-├── README.md                  (you are here)
-├── LICENSE                    (MIT)
+├── README.md                       (you are here)
+├── LICENSE                         (MIT)
 ├── CITATION.cff
 ├── .gitignore
-├── pyproject.toml             (added in Phase 0 step 3)
+├── .gitmodules                     (safety-tooling submodule wiring)
+├── .pre-commit-config.yaml         (from safety-examples)
+├── Makefile                        (make install / dev / hooks / test / smoke / clean)
+├── pyproject.toml                  (src/ layout, ruff, black, pytest, setuptools-scm)
+├── requirements.txt                (runtime deps; dev extras in pyproject.toml)
+├── safety-tooling/                 (git submodule — LLM API, prompt utils, env setup)
 ├── configs/
-│   └── default.yaml           (added in Phase 1 step 17)
+│   └── default.yaml                (added in Phase 1 step 17)
 ├── src/
-│   ├── pipeline/              LangGraph nodes (retriever, writer, graph state)
-│   ├── probes/                Linear + SAE probe training and eval
-│   ├── attacks/               PoisonedRAG + Greshake attack adapters
-│   └── interp/                Activation capture, SAE wrappers, auto-interp glue
+│   └── sae_deception/              (top-level package)
+│       ├── pipeline/               LangGraph nodes (retriever, writer, graph state)
+│       ├── probes/                 Linear + SAE probe training and eval
+│       ├── attacks/                PoisonedRAG + Greshake attack adapters
+│       └── interp/                 Activation capture, SAE wrappers, auto-interp glue
 ├── experiments/
-│   └── YYMMDD_<name>/         One folder per experiment. Notebooks live here.
-├── notebooks/                 Exploratory only. Move to experiments/ when shareable.
-├── data/                      Gitignored. Raw activations, attack corpora, eval outputs.
+│   └── YYMMDD_<name>/              One folder per experiment. Notebooks live here.
+├── notebooks/                      Exploratory only. Move to experiments/ when shareable.
+├── data/                           Gitignored. Raw activations, attack corpora, eval outputs.
 ├── docs/
-│   └── literature_survey.md   Mirror of the Word doc (extracted markdown)
+│   ├── literature_survey.md        Mirror of the Word doc
+│   └── SAFETY_EXAMPLES_NOTES.md    What we cherry-picked from safety-examples, and why
 └── scripts/
-    └── init_repo.sh           Run once to bootstrap git + first commit
+    └── init_repo.sh                Run once to bootstrap git + first commit
 ```
 
 Sub-package boundaries are loose during the de-risk phase. Refactor when (and only when) you transition to extended-project mode.
@@ -122,17 +129,18 @@ The full plan lives in `docs/build_guide.md` (80 steps across 8 phases). Phase g
 > Needs Python 3.11+ and a GPU with ≥16 GB VRAM (Gemma 2-2B in float16 fits on most cards from L4 / RTX 4080 up).
 
 ```bash
-# 1. Clone
-git clone git@github.com:<your-handle>/sae-deception-multiagent-rag.git
+# 1. Clone with submodules
+git clone --recurse-submodules git@github.com:Vidura-Wijekoon/sae-deception-multiagent-rag.git
 cd sae-deception-multiagent-rag
+# (If you forgot --recurse-submodules: git submodule update --init --recursive)
 
-# 2. Env (pyproject.toml lands in Phase 0 step 3)
+# 2. Env
 conda create -n sae-deception python=3.11 -y
 conda activate sae-deception
-pip install -e ".[dev]"        # once pyproject.toml exists
+make dev          # = git submodule init + pip install -e safety-tooling + pip install -e .[dev] + pre-commit hooks
 
-# 3. Smoke test
-python -c "from transformers import AutoModelForCausalLM; AutoModelForCausalLM.from_pretrained('google/gemma-2-2b')"
+# 3. Smoke test (loads Gemma 2-2B, single fwd pass, prints tok/s)
+make smoke
 ```
 
 Detailed step-by-step instructions are in `docs/build_guide.md`.
@@ -160,7 +168,7 @@ Until there's a paper, please cite the repo via `CITATION.cff` or the suggested 
   title        = {sae-deception-multiagent-rag: Probing for Deception in
                   Multi-Agent RAG Pipelines Using Sparse Autoencoders},
   year         = {2026},
-  howpublished = {\url{https://github.com/<your-handle>/sae-deception-multiagent-rag}},
+  howpublished = {\url{https://github.com/Vidura-Wijekoon/sae-deception-multiagent-rag}},
   note         = {BlueDot Impact Technical AI Safety Project. Research preview.},
 }
 ```
@@ -189,4 +197,4 @@ MIT — see [LICENSE](./LICENSE). Choosing a permissive license because safety r
 
 Vidura — `businessaividura@viduraaitech.space`
 
-Issues: [GitHub Issues](https://github.com/<your-handle>/sae-deception-multiagent-rag/issues) (preferred for technical questions and bug reports).
+Issues: [GitHub Issues](https://github.com/Vidura-Wijekoon/sae-deception-multiagent-rag/issues) (preferred for technical questions and bug reports).

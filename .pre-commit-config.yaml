@@ -1,0 +1,51 @@
+# Pre-commit hook config.
+# Lifted from safety-research/safety-examples@v1.0.0 with one local change:
+# the `no-commit-to-branch` hook is commented out during the de-risk phase
+# (solo developer, no PR workflow yet). Re-enable in extended-project mode.
+#
+# Install once with:    make hooks
+# Run manually with:    pre-commit run --all-files
+
+default_language_version:
+  python: python3.11
+
+repos:
+  # ----- Standard hygiene hooks -----
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: check-shebang-scripts-are-executable
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: debug-statements
+      # Re-enable this once you are working on feature branches with PRs:
+      # - id: no-commit-to-branch
+      #   args: ['--branch=main']
+      #   stages: [pre-commit]
+
+  # ----- Ruff: lint + import sort -----
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.5  # keep in sync with requirements.txt
+    hooks:
+      - id: ruff
+        types_or: [python, pyi, jupyter]
+        args: [--fix]
+      # Uncomment if you want ruff-format instead of black:
+      # - id: ruff-format
+      #   types_or: [python, pyi, jupyter]
+
+  # ----- Black: formatter -----
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language_version: python3.11
+
+  # ----- nbstripout: clear notebook outputs before commit -----
+  # Critical for this project: activation-tensor screenshots and intermediate
+  # plots in notebooks would balloon the repo otherwise.
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout

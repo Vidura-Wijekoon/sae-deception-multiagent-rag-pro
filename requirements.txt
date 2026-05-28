@@ -1,0 +1,53 @@
+# Runtime dependencies for sae-deception-multiagent-rag.
+#
+# Install order (build guide Phase 0 step 3):
+#   1.  conda create -n sae-deception python=3.11 -y && conda activate sae-deception
+#   2.  pip install -e safety-tooling          # the submodule
+#   3.  pip install -e .                       # this project (reads this file)
+#   4.  pip install -e ".[dev]"                # dev extras (pre-commit, ruff, black, pytest)
+#
+# Dev tools and lint pins live in pyproject.toml [project.optional-dependencies.dev].
+
+# ----- Core inference -----
+torch>=2.3,<3.0
+transformers>=4.44
+accelerate>=0.34
+sentencepiece>=0.2
+safetensors>=0.4
+
+# ----- Mechanistic interpretability -----
+transformer-lens>=2.0     # hook-based activation capture
+sae-lens>=4.0             # Gemma Scope SAE loading + utilities
+
+# ----- LangGraph + retrieval -----
+langgraph>=0.2
+langchain-core>=0.3
+langchain-community>=0.3
+faiss-cpu>=1.8
+sentence-transformers>=3.0
+
+# ----- Data and eval -----
+datasets>=3.0
+scikit-learn>=1.5          # logistic regression probes
+pandas>=2.2
+numpy>=1.26
+scipy>=1.13
+pyarrow>=17.0              # parquet IO
+
+# ----- Logging, caching, configs -----
+wandb>=0.18
+diskcache>=5.6             # LLM response cache
+simple-parsing>=0.1        # CLI args from dataclasses (matches Phase 0 step 19)
+pydantic>=2.7
+pyyaml>=6.0
+python-dotenv>=1.0
+
+# ----- Notebook + plotting -----
+jupyterlab>=4.2
+matplotlib>=3.9
+seaborn>=0.13
+plotly>=5.24
+
+# ----- Misc utility -----
+tqdm>=4.66
+rich>=13.7

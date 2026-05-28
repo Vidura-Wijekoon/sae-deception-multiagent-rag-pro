@@ -1,0 +1,110 @@
+# pyproject.toml for sae-deception-multiagent-rag
+# Lifted from safety-research/safety-examples@v1.0.0 and adapted:
+#   - project name: examples -> sae_deception
+#   - src/ layout: package lives at src/sae_deception/
+#   - line length 120 preserved (matches safety-tooling conventions)
+#
+# See https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+
+[build-system]
+requires = ["setuptools>=61", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sae_deception"
+description = "Probing for deception in multi-agent RAG pipelines using sparse autoencoders, linear probes, and attribution graphs."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Vidura", email = "businessaividura@viduraaitech.space" }]
+keywords = [
+  "mechanistic-interpretability",
+  "sparse-autoencoders",
+  "ai-safety",
+  "multi-agent",
+  "rag",
+  "deception-detection",
+]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dynamic = ["version", "dependencies"]
+
+# Optional dev/test extras. Install with: pip install -e ".[dev]"
+[project.optional-dependencies]
+dev = [
+  "pre-commit>=4.0",
+  "ruff==0.11.5",          # keep in sync with .pre-commit-config.yaml
+  "black==25.1.0",
+  "pytest>=8.0",
+  "pytest-xdist>=3.5",
+  "nbstripout>=0.8.1",
+  "ipykernel>=6.29",
+]
+
+[project.urls]
+Repository = "https://github.com/Vidura-Wijekoon/sae-deception-multiagent-rag"
+Issues = "https://github.com/Vidura-Wijekoon/sae-deception-multiagent-rag/issues"
+
+# ----- setuptools config (src/ layout) -----
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sae_deception*"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools_scm]
+# version derived from git tags; falls back to 0.0.1 until you tag a release
+fallback_version = "0.0.1"
+
+# ----- Ruff: linter + import sort -----
+[tool.ruff]
+target-version = "py311"
+extend-include = ["*.ipynb"]
+extend-exclude = ["safety-tooling", "data", "experiments/*/data"]
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = ["I"]  # isort-style import ordering
+
+[tool.ruff.lint.isort]
+# wandb is sometimes a package and sometimes a directory created at runtime;
+# tell ruff to always treat it as third-party so import order is stable.
+known-third-party = ["wandb"]
+
+# ----- Black: formatter -----
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | safety-tooling
+  | data
+)/
+'''
+
+# ----- Pytest -----
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra -q"
+filterwarnings = [
+  "ignore::DeprecationWarning:transformers.*",
+  "ignore::FutureWarning:huggingface_hub.*",
+]

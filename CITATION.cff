@@ -11,7 +11,7 @@ type: software
 authors:
   - given-names: Vidura
     email: businessaividura@viduraaitech.space
-repository-code: 'https://github.com/<your-handle>/sae-deception-multiagent-rag'
+repository-code: 'https://github.com/Vidura-Wijekoon/sae-deception-multiagent-rag'
 abstract: >-
   An open-source research preview applying sparse autoencoder probes,
   linear probes, and attribution-graph tracing to a LangGraph
