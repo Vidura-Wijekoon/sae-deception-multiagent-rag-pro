@@ -1,0 +1,52 @@
+# YAML 1.2
+# Citation File Format — https://citation-file-format.github.io/
+cff-version: 1.2.0
+title: >-
+  sae-deception-multiagent-rag: Probing for Deception in Multi-Agent
+  RAG Pipelines Using Sparse Autoencoders
+message: >-
+  If you use this software or the ideas in it, please cite it using
+  the metadata below.
+type: software
+authors:
+  - given-names: Vidura
+    email: businessaividura@viduraaitech.space
+repository-code: 'https://github.com/<your-handle>/sae-deception-multiagent-rag'
+abstract: >-
+  An open-source research preview applying sparse autoencoder probes,
+  linear probes, and attribution-graph tracing to a LangGraph
+  retrieval-augmented generation pipeline. Targets cross-agent
+  activation transfer, retrieval-time amplification of adversarial
+  features, and cross-model generalisation of deception probes.
+  Anchored on Sharkey et al. (2025), "Open Problems in Mechanistic
+  Interpretability."
+keywords:
+  - mechanistic-interpretability
+  - sparse-autoencoders
+  - ai-safety
+  - multi-agent
+  - retrieval-augmented-generation
+  - deception-detection
+  - prompt-injection
+  - langgraph
+  - gemma-scope
+license: MIT
+version: 0.0.1
+date-released: '2026-05-28'
+references:
+  - type: article
+    title: Open Problems in Mechanistic Interpretability
+    authors:
+      - family-names: Sharkey
+        given-names: Lee
+    year: 2025
+    url: 'https://arxiv.org/abs/2501.16496'
+  - type: article
+    title: >-
+      Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on
+      Gemma 2
+    authors:
+      - family-names: Lieberum
+        given-names: Tom
+    year: 2024
+    url: 'https://arxiv.org/abs/2408.05147'
