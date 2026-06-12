@@ -1,5 +1,5 @@
 # YAML 1.2
-# Citation File Format — https://citation-file-format.github.io/
+# Citation File Format - https://citation-file-format.github.io/
 cff-version: 1.2.0
 title: >-
   sae-deception-multiagent-rag: Probing for Deception in Multi-Agent

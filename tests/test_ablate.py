@@ -1,6 +1,6 @@
 """Phase 6 gate: the causal harness behaves as designed on the CPU proxy.
 
-All tests use cheap representers (tfidf_svd / random_init) — no model download.
+All tests use cheap representers (tfidf_svd / random_init) - no model download.
 """
 
 from __future__ import annotations
@@ -57,7 +57,7 @@ def test_context_swap_necessity_is_near_total_for_worst_case_reader():
     almost always create it. Not exactly 1.0: a false-answer token can occur
     *benignly* in another retrieved doc (e.g. "nitrogen" answers q7 falsely but
     appears truthfully in q13's clean passage), so the token-matching reader
-    still surfaces it post-swap — a real confound worth measuring, not a bug.
+    still surfaces it post-swap - a real confound worth measuring, not a bug.
     The probe score must mostly fall under the swap."""
     ex = build_corpus(seed=0, n_base_facts=30, style="naive")
     rep = get_representer("tfidf_svd", dim=96, seed=0)

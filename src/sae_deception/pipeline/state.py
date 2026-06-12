@@ -1,7 +1,7 @@
 """Shared graph state for the two-agent RAG pipeline.
 
 Deliberately a plain dataclass rather than a LangGraph `TypedDict` for the
-de-risk run — the structure mirrors what a LangGraph `StateGraph` would carry
+de-risk run - the structure mirrors what a LangGraph `StateGraph` would carry
 (Retriever node -> Writer node), so porting to real LangGraph later is a
 mechanical wrap. The two text views this exposes (`retriever_view`,
 `writer_view`) are exactly what the interp layer captures activations on.

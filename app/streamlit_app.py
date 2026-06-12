@@ -1,4 +1,4 @@
-"""sae-deception-multiagent-rag — interactive dashboard.
+"""sae-deception-multiagent-rag - interactive dashboard.
 
     streamlit run app/streamlit_app.py        (or: make ui)
 
@@ -6,11 +6,11 @@ Five views over the de-risk experiment, plus a live playground that runs a
 query through the real LangGraph retriever->writer pipeline and scores it with
 the deception probe:
 
-  1. Overview            — phase gates, headline numbers, the three findings
-  2. Direction 1 · Probes — AUROC + bootstrap CIs per representation/arm/style
-  3. Direction 2 + Phase 6 — amplification ratios; causal ablation results
-  4. Attack corpus       — browse the 120-context PoisonedRAG/Greshake set
-  5. Live pipeline       — run the two-agent graph on any query, watch the
+  1. Overview            - phase gates, headline numbers, the three findings
+  2. Direction 1 · Probes - AUROC + bootstrap CIs per representation/arm/style
+  3. Direction 2 + Phase 6 - amplification ratios; causal ablation results
+  4. Attack corpus       - browse the 120-context PoisonedRAG/Greshake set
+  5. Live pipeline       - run the two-agent graph on any query, watch the
                            probe's deception score react to poisoning
 
 Everything renders from the artefacts the experiment scripts write
@@ -187,7 +187,7 @@ with st.sidebar:
             st.write(f"**config hash:** `{manifest.get('config_hash', '?')}`")
             st.write(f"**representation:** `{manifest.get('representation_revision', '?')}`")
     st.divider()
-    st.caption("CPU de-risk proxy — MiniLM stands in for Gemma 2-2B + Gemma Scope SAE. "
+    st.caption("CPU de-risk proxy - MiniLM stands in for Gemma 2-2B + Gemma Scope SAE. "
                "Swap `representation: gemma_sae` in configs/default.yaml for the GPU run.")
 
 tab_overview, tab_d1, tab_d2p6, tab_corpus, tab_live = st.tabs(
@@ -197,7 +197,7 @@ tab_overview, tab_d1, tab_d2p6, tab_corpus, tab_live = st.tabs(
 
 
 # ---------------------------------------------------------------------------
-# Tab 1 — Overview
+# Tab 1 - Overview
 # ---------------------------------------------------------------------------
 
 with tab_overview:
@@ -219,12 +219,12 @@ with tab_overview:
     p6_done = phase6 is not None
     gates = pd.DataFrame([
         ("0", "Environment + core papers read", "✅ done"),
-        ("1", "Working RAG pipeline (LangGraph retriever→writer)", "✅ done — real LangGraph StateGraph (pipeline/graph.py)"),
-        ("2", "Activations captured per agent per query", "✅ proxy — MiniLM views cached to data/acts/ (Gemma capture = GPU)"),
+        ("1", "Working RAG pipeline (LangGraph retriever→writer)", "✅ done - real LangGraph StateGraph (pipeline/graph.py)"),
+        ("2", "Activations captured per agent per query", "✅ proxy - MiniLM views cached to data/acts/ (Gemma capture = GPU)"),
         ("3", "Gemma Scope SAE attached, features labeled", "⏳ GPU-gated"),
-        ("4", "120-example attack set with measured success rate", "✅ done — gate A2.1 PASS"),
+        ("4", "120-example attack set with measured success rate", "✅ done - gate A2.1 PASS"),
         ("5", "Per-representation AUROC vs random-init control", "✅ proxy done"),
-        ("6", "Cross-agent transfer: correlational + causal", "✅ proxy done — causal harness run" if p6_done else "🔶 harness built, run pending"),
+        ("6", "Cross-agent transfer: correlational + causal", "✅ proxy done - causal harness run" if p6_done else "🔶 harness built, run pending"),
         ("7", "Summary + cohort feedback + extended-mode decision", "🔶 summary written; cohort feedback external"),
     ], columns=["Phase", "Gate", "Status"])
     st.dataframe(gates, hide_index=True, use_container_width=True)
@@ -232,23 +232,23 @@ with tab_overview:
     st.subheader("The three findings that changed the GPU plan")
     st.markdown(
         "1. **The easy version of the task is fake.** A representation with no trained "
-        "parameters scores AUROC ≈1.0 on naive attacks — the label is decodable from surface "
+        "parameters scores AUROC ≈1.0 on naive attacks - the label is decodable from surface "
         "text. Every headline number must ship beside the random-init control.\n"
         "2. **A frozen probe cannot catch hardened factual poisoning** (single-token lie): "
         "≈chance overall, below chance on PoisonedRAG. Injection-style attacks (Greshake) stay "
         "detectable because injected instructions are intrinsically foreign text.\n"
-        "3. **Correlational 'cross-agent' signal is confounded** — both agents see the same "
+        "3. **Correlational 'cross-agent' signal is confounded** - both agents see the same "
         "poisoned text, so combined-vs-writer AUROC can't establish transfer. The claim now "
         "rests on the Phase 6 causal harness (see the Causal tab)."
     )
 
 
 # ---------------------------------------------------------------------------
-# Tab 2 — Direction 1 probes
+# Tab 2 - Direction 1 probes
 # ---------------------------------------------------------------------------
 
 with tab_d1:
-    st.header("Direction 1 — probe AUROC by representation and arm")
+    st.header("Direction 1 - probe AUROC by representation and arm")
     style = st.radio("Attack corpus style", ["naive", "hardened"], horizontal=True,
                      help="naive = boilerplate-heavy attacks (lexically trivial); "
                           "hardened = single-token lies / naturalistic injections")
@@ -264,7 +264,7 @@ with tab_d1:
                 {"Attack family": "Greshake (prompt injection)", "AUROC": pat.get("greshake")},
             ]), hide_index=True, use_container_width=True)
     with col_b:
-        st.subheader("Δ combined − writer (the correlational transfer test)")
+        st.subheader("Δ combined - writer (the correlational transfer test)")
         rows = [{"Representation": REP_LABELS.get(r, r),
                  "Δ AUROC": d.get("combined_minus_writer")}
                 for r, d in metrics["direction1_probes"][style].items()]
@@ -274,11 +274,11 @@ with tab_d1:
 
 
 # ---------------------------------------------------------------------------
-# Tab 3 — Direction 2 amplification + Phase 6 causal
+# Tab 3 - Direction 2 amplification + Phase 6 causal
 # ---------------------------------------------------------------------------
 
 with tab_d2p6:
-    st.header("Direction 2 — does retrieval amplify adversarial features?")
+    st.header("Direction 2 - does retrieval amplify adversarial features?")
     amp_rows = []
     for rep_name, a in metrics.get("direction2_amplification", {}).items():
         amp_rows.append({
@@ -290,16 +290,16 @@ with tab_d2p6:
         })
     st.dataframe(pd.DataFrame(amp_rows), hide_index=True, use_container_width=True)
     st.caption("Falsifier check: ratios concentrated near 1.0 ⇒ on this proxy, retrieval is "
-               "*neutral* — neither amplifier nor filter.")
+               "*neutral* - neither amplifier nor filter.")
 
     st.divider()
-    st.header("Phase 6 — causal harness (Direction 1's real test)")
+    st.header("Phase 6 - causal harness (Direction 1's real test)")
     if not phase6:
         st.info("No phase6_ablation.json found for this experiment yet. "
                 "Run `python scripts/run_phase6.py` to produce it.")
     else:
         cs = phase6["context_swap"]
-        st.subheader("Arm 1 · Context-swap intervention — do() on the retriever→writer channel")
+        st.subheader("Arm 1 · Context-swap intervention - do() on the retriever→writer channel")
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Necessity (swap removes attack)", f"{cs['necessity_flip_rate']:.2f}")
         c2.metric("Sufficiency (insert creates attack)", f"{cs['sufficiency_flip_rate']:.2f}")
@@ -308,7 +308,7 @@ with tab_d2p6:
         with st.expander(f"Per-query intervention table ({cs['n_queries_poison_retrieved']} queries)"):
             st.dataframe(pd.DataFrame(cs["per_query"]), hide_index=True, use_container_width=True)
 
-        st.subheader("Arm 2 · Feature ablation — shared-axis (transfer) test")
+        st.subheader("Arm 2 · Feature ablation - shared-axis (transfer) test")
         fa_style = st.radio("Corpus style", list(phase6["feature_ablation"].keys()),
                             horizontal=True, key="fa_style")
         fa = phase6["feature_ablation"][fa_style]
@@ -324,21 +324,21 @@ with tab_d2p6:
                       delta_color="off")
             st.caption("Ablating, *in the writer*, the dims the **retriever** probe found: "
                        "a drop far beyond the random control means the two agents read the "
-                       "deception signal off shared feature axes — the cheap analog of "
+                       "deception signal off shared feature axes - the cheap analog of "
                        "cross-agent feature transfer. On the GPU run these dims become "
                        "Gemma Scope SAE latents and ablation becomes feature clamping.")
 
 
 # ---------------------------------------------------------------------------
-# Tab 4 — Attack corpus browser
+# Tab 4 - Attack corpus browser
 # ---------------------------------------------------------------------------
 
 with tab_corpus:
-    st.header("Attack corpus — 120 contexts per style")
+    st.header("Attack corpus - 120 contexts per style")
     style_c = st.radio("Style", ["naive", "hardened"], horizontal=True, key="corpus_style")
     df = load_manifest(exp_id, style_c)
     if df.empty:
-        st.info("Manifest not found — run `python scripts/run_experiment.py` first.")
+        st.info("Manifest not found - run `python scripts/run_experiment.py` first.")
     else:
         f1, f2, f3 = st.columns(3)
         atk = f1.multiselect("Attack type", sorted(df["attack_type"].unique()),
@@ -366,14 +366,14 @@ with tab_corpus:
                 st.markdown("**🟢 Clean context**")
                 st.info(clean_row["context_text"])
             with po:
-                st.markdown(f"**🔴 Poisoned context** — `{pois_row['attack_type']}`")
+                st.markdown(f"**🔴 Poisoned context** - `{pois_row['attack_type']}`")
                 st.error(pois_row["context_text"])
                 if pois_row["injected_claim"]:
                     st.caption(f"Injected claim: `{pois_row['injected_claim']}`")
 
 
 # ---------------------------------------------------------------------------
-# Tab 5 — Live pipeline playground
+# Tab 5 - Live pipeline playground
 # ---------------------------------------------------------------------------
 
 with tab_live:
@@ -392,7 +392,7 @@ with tab_live:
 
     examples, graph, deception_score = playground(rep_choice, style_live)
 
-    queries = {f"q{f[0]:03d} — {f[2]}": f[0] for f in _FACTS}
+    queries = {f"q{f[0]:03d} - {f[2]}": f[0] for f in _FACTS}
     qkey = st.selectbox("Query", list(queries.keys()))
     qid = queries[qkey]
     base = next(e for e in examples if e.qid == qid and e.label == 0)
@@ -409,23 +409,23 @@ with tab_live:
 
         left, right = st.columns([3, 2])
         with left:
-            st.subheader("Agent 1 — Retriever")
+            st.subheader("Agent 1 - Retriever")
             for r in out["retrieved"]:
                 badge = "🔴 POISON" if r["is_poison"] else "🟢 clean"
                 st.markdown(f"`{r['doc_id']}` · sim {r['score']:.3f} · {badge}")
                 st.caption(r["text"])
-            st.subheader("Agent 2 — Writer")
+            st.subheader("Agent 2 - Writer")
             st.markdown(f"**Answer:** {out['answer']}")
             if out["surfaced_injection"]:
-                st.error("⚠️ The writer surfaced the injected content — attack succeeded.")
+                st.error("⚠️ The writer surfaced the injected content - attack succeeded.")
             elif out["poison_retrieved"]:
                 st.warning("Poison was retrieved but did not surface in the answer.")
             else:
-                st.success("Clean run — no poison retrieved.")
+                st.success("Clean run - no poison retrieved.")
         with right:
             score = deception_score(out["writer_view"])
             st.plotly_chart(gauge(score, "Probe P(poisoned context)"), use_container_width=True)
-            st.caption("Full-data probe trained on this corpus/representation — a "
+            st.caption("Full-data probe trained on this corpus/representation - a "
                        "demonstration readout, not the held-out Phase 5 evaluation.")
             with st.expander("Writer view (what crosses the agent boundary)"):
                 st.text(out["writer_view"])

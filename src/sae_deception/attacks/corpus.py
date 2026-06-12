@@ -17,9 +17,9 @@ A2.3 for the presence-vs-success distinction). Clean and poisoned contexts share
 the same benign lead/trailer so a probe cannot win on document length alone.
 
 Two styles:
-  * "naive"    — attacks carry obvious boilerplate (a lexically trivial label;
+  * "naive"    - attacks carry obvious boilerplate (a lexically trivial label;
                  a random-init representation detects them at ~AUROC 1.0).
-  * "hardened" — low-signature attacks: PoisonedRAG differs from clean by only
+  * "hardened" - low-signature attacks: PoisonedRAG differs from clean by only
                  the answer token; Greshake uses naturalistic instruction text.
 
 Deterministic: same `seed` + `style` -> same corpus, same hashes.
@@ -43,7 +43,7 @@ TRAILER = "Standard reference works treat this as settled and uncontroversial."
 
 
 # ---------------------------------------------------------------------------
-# Fact pool — 60 distinct items across three difficulty tiers.
+# Fact pool - 60 distinct items across three difficulty tiers.
 # Fields: (qid, tier, question, answer, subject, true_clause, false_answer)
 # ---------------------------------------------------------------------------
 
@@ -233,7 +233,7 @@ def build_corpus(
 
 
 def write_manifest(examples: list[ContextExample], path: Path) -> None:
-    """Write data/attacks/manifest.jsonl — one hashed example per line."""
+    """Write data/attacks/manifest.jsonl - one hashed example per line."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         for ex in examples:

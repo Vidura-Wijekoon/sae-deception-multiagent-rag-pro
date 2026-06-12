@@ -1,4 +1,4 @@
-"""Test 01 — Wikipedia retrieval contamination.
+"""Test 01 - Wikipedia retrieval contamination.
 
 Runs 20 hand-picked factual questions through Gemma 2-2B with no retrieved
 context, substring-matches generations against gold answers, and prints a

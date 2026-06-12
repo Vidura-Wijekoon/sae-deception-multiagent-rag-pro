@@ -11,10 +11,10 @@ Writer node:     a deterministic *non-robust reader* that surfaces whatever the
 
 Attack-success is reported as two numbers, separating the model-agnostic part
 from the reader-behaviour part:
-  * poison_retrieval_rate  — poisoned doc reaches the top-k. Depends only on the
+  * poison_retrieval_rate  - poisoned doc reaches the top-k. Depends only on the
                              retriever + embeddings. This is the real, model-free
                              signal the Phase-4 gate (A2.1, >=30%) is checked on.
-  * naive_surface_rate     — given retrieval, the non-robust reader emits the
+  * naive_surface_rate     - given retrieval, the non-robust reader emits the
                              injected claim. Deterministic upper bound.
 """
 

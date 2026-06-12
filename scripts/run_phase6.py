@@ -1,4 +1,4 @@
-"""Phase 6 — run the causal harness and write phase6_ablation.json.
+"""Phase 6 - run the causal harness and write phase6_ablation.json.
 
     python scripts/run_phase6.py --config configs/default.yaml
 

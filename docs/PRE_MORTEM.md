@@ -5,7 +5,7 @@
 Date written: **2026-05-29** (Phase 0, before any experiments).
 Imagined failure date: **2026-06-26** (end of sprint).
 
-This document is **different from `ASSUMPTIONS.md`**. The assumptions audit is about *empirical* failures — claims that turn out false. This pre-mortem is about *process* failures — reasons the project doesn't ship even when the empirical work is fine. They overlap less than people expect; most papers that don't ship aren't killed by null results, they're killed by time, scope, and discipline.
+This document is **different from `ASSUMPTIONS.md`**. The assumptions audit is about *empirical* failures - claims that turn out false. This pre-mortem is about *process* failures - reasons the project doesn't ship even when the empirical work is fine. They overlap less than people expect; most papers that don't ship aren't killed by null results, they're killed by time, scope, and discipline.
 
 ---
 
@@ -31,7 +31,7 @@ For each: what it looks like, the **early signal** that tells me it's happening,
 
 **Mitigation (commit to now).**
 - Hard time-box Phase 2 (activation capture) at **8 hours total wall-clock**. After 8 hours, if `transformer-lens` isn't working, abandon it and use raw HuggingFace forward hooks (more verbose but stable).
-- Before starting Phase 2, write a one-paragraph "what would 'good enough' look like" — set the bar at "I can extract a residual-stream tensor for an arbitrary token in either agent," not "the activations match HF to float16 precision."
+- Before starting Phase 2, write a one-paragraph "what would 'good enough' look like" - set the bar at "I can extract a residual-stream tensor for an arbitrary token in either agent," not "the activations match HF to float16 precision."
 
 **Fail-fast pivot.** Bypass `transformer-lens` entirely. Hook on the HuggingFace model with `register_forward_hook`. ~3 hours of work, fully under my control, no compatibility surprises.
 
@@ -39,11 +39,11 @@ For each: what it looks like, the **early signal** that tells me it's happening,
 
 ### F2. Pipeline over-engineering eats week 2
 
-**The story.** I keep "improving" the LangGraph code — generic node decorators, fancy state types, retry logic. Two weeks in, the pipeline is elegant but I still haven't run a probe.
+**The story.** I keep "improving" the LangGraph code - generic node decorators, fancy state types, retry logic. Two weeks in, the pipeline is elegant but I still haven't run a probe.
 
 **Probability:** 45%. Especially likely because I have a software-engineering background and the LangGraph API is fun to play with.
 
-**Early signal.** End of Phase 1 (day 5–6), `run_pipeline.py` has more than 250 lines of Python or imports more than 10 internal modules. If yes, I am gold-plating.
+**Early signal.** End of Phase 1 (day 5-6), `run_pipeline.py` has more than 250 lines of Python or imports more than 10 internal modules. If yes, I am gold-plating.
 
 **Mitigation.**
 - The Phase 1 pipeline ships when it can produce a generation for one query in <60 seconds. Not before. Not after.
@@ -65,7 +65,7 @@ For each: what it looks like, the **early signal** that tells me it's happening,
 **Mitigation.**
 - **Write the writeup outline today, before any experiments run.** Bullet points, no prose. Sections: motivation, method, results (with empty placeholders), interpretation, what would change my mind.
 - Commit to a "write 200 words per phase" rule. End of each Phase N, write 200 words into `docs/draft_post.md` describing what happened. By end of Phase 6 that's 1,200+ words of raw material.
-- The LessWrong post does not need new framing — copy from the literature survey doc directly.
+- The LessWrong post does not need new framing - copy from the literature survey doc directly.
 - **Publish the writeup, even if results are null.** A clean negative result with a clear setup is more valuable than no result at all.
 
 **Fail-fast pivot.** If by 2026-06-19 the writeup is still under 500 words, freeze experimentation and spend the remaining time only on writing. A 1,200-word "here's what I tried and what I learned, including what didn't work" post is publishable. A perfect experiment with no writeup is not.
@@ -97,11 +97,11 @@ For each: what it looks like, the **early signal** that tells me it's happening,
 **Early signal.** End of day 12 (mid-week 3), attack-success rate is still < 10%.
 
 **Mitigation.**
-- Test 01 (Wikipedia contamination — being run today) gives an early read on whether the corpus choice is sound. If it requires a swap, do the swap before building the FAISS index.
+- Test 01 (Wikipedia contamination - being run today) gives an early read on whether the corpus choice is sound. If it requires a swap, do the swap before building the FAISS index.
 - Time-box Phase 4 at **6 hours**. If after 6 hours attack-success is < 30%, accept whatever you have and move on. Document the lower bound and note it as a limitation.
 - Use PoisonedRAG's pre-tuned GCG strings rather than hand-crafting attacks.
 
-**Fail-fast pivot.** If attacks don't fire on Gemma 2-2B, switch to the Hubinger sleeper-agent weights (Mistral-7B variant). The attack is "the trigger token is in context" rather than "this poisoned doc was retrieved" — different threat model but a working pipeline.
+**Fail-fast pivot.** If attacks don't fire on Gemma 2-2B, switch to the Hubinger sleeper-agent weights (Mistral-7B variant). The attack is "the trigger token is in context" rather than "this poisoned doc was retrieved" - different threat model but a working pipeline.
 
 ---
 
@@ -115,7 +115,7 @@ For each: what it looks like, the **early signal** that tells me it's happening,
 
 **Mitigation.**
 - Pre-commit to publishing the result regardless of direction. Write this commit into the LessWrong draft NOW, in the first paragraph: "I expect to publish whatever I find, including null results. Here is why."
-- The MacDiarmid+ 2024 and Heap+ 2025 papers both lean on negative-results framing — read them before Phase 5 to internalise that null results are publishable and useful.
+- The MacDiarmid+ 2024 and Heap+ 2025 papers both lean on negative-results framing - read them before Phase 5 to internalise that null results are publishable and useful.
 - Tell my BlueDot mentor in week 1 that I plan to publish either way. The social commitment makes backsliding harder.
 
 **Fail-fast pivot.** Reframe the project as a methodology contribution. "We applied SAE probes to a multi-agent RAG setting. They didn't find a useful signal. Here is what we learn from the failure, and what to try instead." This is genuinely useful for the field.
@@ -131,10 +131,10 @@ For each: what it looks like, the **early signal** that tells me it's happening,
 **Early signal.** Any single day where I spend more than 4 hours blocked on something I can't unblock myself.
 
 **Mitigation.**
-- **GPU plan B** — set up a RunPod account ahead of time. Test it once. ~30 minutes; pays off if hardware fails.
-- **Mentor backup** — identify two non-mentor channels for technical questions: the EleutherAI Discord interpretability channel, and the Open Source Mech Interp Slack. Join both this week.
-- **Schedule buffer** — block 4 hours of "buffer time" per week that's unscheduled, to absorb life events.
-- **Cloud backup** — `git push` at end of every day. Activations are gitignored but should be backed up to a cloud drive nightly via a cron job.
+- **GPU plan B** - set up a RunPod account ahead of time. Test it once. ~30 minutes; pays off if hardware fails.
+- **Mentor backup** - identify two non-mentor channels for technical questions: the EleutherAI Discord interpretability channel, and the Open Source Mech Interp Slack. Join both this week.
+- **Schedule buffer** - block 4 hours of "buffer time" per week that's unscheduled, to absorb life events.
+- **Cloud backup** - `git push` at end of every day. Activations are gitignored but should be backed up to a cloud drive nightly via a cron job.
 
 **Fail-fast pivot.** If life genuinely eats a week, cut Directions 2 and 3 immediately and salvage Direction 1 from whatever exists.
 
@@ -177,13 +177,13 @@ Each Friday, 30 minutes. Open `docs/PRE_MORTEM.md`, run through the checklist. I
 
 ## Minimum shippable artefact (the safety net)
 
-If absolutely everything goes wrong — empirical results are null, pipeline never quite works end-to-end, two Directions get dropped — what do I still ship?
+If absolutely everything goes wrong - empirical results are null, pipeline never quite works end-to-end, two Directions get dropped - what do I still ship?
 
 **The minimum.** A LessWrong / Alignment Forum post titled something like *"What I learned trying to probe deception in multi-agent RAG with SAEs"*. Roughly 1,500 words. Sections:
 
 1. The motivation (lifted directly from the literature survey, no new writing).
 2. The setup (whatever pipeline did work, even if degraded).
-3. What I tried and what happened — one paragraph per attempted experiment, including the failures.
+3. What I tried and what happened - one paragraph per attempted experiment, including the failures.
 4. What I learned about the methodology (whether the approach is viable, what the obstacles are, what I'd try differently).
 5. The code (link to the repo, even if incomplete).
 
@@ -201,6 +201,6 @@ These are decisions I'm making **now** so that future-me, under pressure, can't 
 4. **I will not work on Direction 2 or 3 until Direction 1 has a per-layer AUROC PNG saved to disk.**
 5. **I will start writing `docs/draft_post.md` today.** Bullet outline, no prose. 200 words of substance added per phase.
 6. **I will share the Phase 0 framing on LessWrong as a "research proposal" post in week 1** for early feedback and to lock in the social commitment.
-7. **I will time-box rabbit holes at 8 hours.** After 8 hours stuck on one thing, switch to plan B (documented in F1–F7 above).
+7. **I will time-box rabbit holes at 8 hours.** After 8 hours stuck on one thing, switch to plan B (documented in F1-F7 above).
 
 Re-read this document at the start of each weekly fail-fast review.

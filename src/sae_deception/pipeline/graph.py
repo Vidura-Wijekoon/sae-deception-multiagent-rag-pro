@@ -1,4 +1,4 @@
-"""Phase 1 completion — the retriever→writer pipeline as a real LangGraph StateGraph.
+"""Phase 1 completion - the retriever→writer pipeline as a real LangGraph StateGraph.
 
 `state.py` deliberately mirrored a LangGraph state so this wrap would be
 mechanical; this module is that wrap. The graph has exactly the two nodes the
@@ -10,7 +10,7 @@ The nodes delegate to the same `Retriever` / `writer_node` used by the
 pipeline-lite in `rag.py`, so numbers are identical between the two code paths
 (asserted in tests/test_graph.py). The graph state carries the two text views
 (`retriever_view`, `writer_view`) that the interp layer captures activations
-on — the cross-agent context boundary is the `retriever -> writer` edge.
+on - the cross-agent context boundary is the `retriever -> writer` edge.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """Linear probes, cross-validated AUROC, bootstrap CIs, and controls (Phase 5).
 
-The probe is a plain L2-logistic regression on a frozen representation — the
+The probe is a plain L2-logistic regression on a frozen representation - the
 same recipe as MacDiarmid et al. 2024 and Goldowsky-Dill et al. 2025. We report:
 
   * pooled out-of-fold (OOF) AUROC from stratified k-fold CV, so every example
@@ -117,7 +117,7 @@ def run_probe(name: str, X: np.ndarray, y: np.ndarray, *, n_folds=5, C=1.0, n_bo
 
 
 def shuffle_rows(X: np.ndarray, seed: int) -> np.ndarray:
-    """Permute rows of a feature block — destroys its alignment to labels.
+    """Permute rows of a feature block - destroys its alignment to labels.
     Used for the A3.6 shuffled-retriever negative control."""
     rng = np.random.RandomState(seed)
     perm = rng.permutation(len(X))
@@ -125,7 +125,7 @@ def shuffle_rows(X: np.ndarray, seed: int) -> np.ndarray:
 
 
 # ---------------------------------------------------------------------------
-# Direction 2 — retrieval amplification
+# Direction 2 - retrieval amplification
 # ---------------------------------------------------------------------------
 
 def amplification_ratios(no_ctx: np.ndarray, clean: np.ndarray, poisoned: np.ndarray) -> dict:

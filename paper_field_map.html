@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Field Map — SAE-Deception-Multiagent-RAG</title>
+<title>Field Map - SAE-Deception-Multiagent-RAG</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/standalone/umd/vis-network.min.js"></script>
 <style>
   :root { --bg:#0b1020; --panel:#141b2e; --ink:#e6edf6; --muted:#93a1b8; --line:#27324a; }
@@ -39,7 +39,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>Field map — probing deception in multi-agent RAG</h1>
+    <h1>Field map - probing deception in multi-agent RAG</h1>
     <p>Core node: <strong>Open Problems in Mechanistic Interpretability</strong> (Sharkey et al. 2025). Drag nodes · scroll to zoom · click a paper for detail.</p>
   </header>
   <div id="main">
@@ -59,7 +59,7 @@
 </div>
 <script>
 const CAT = {
-  core:      {color:"#f5b301", label:"Core — the open-problems map"},
+  core:      {color:"#f5b301", label:"Core - the open-problems map"},
   project:   {color:"#e6edf6", label:"This project"},
   direction: {color:"#22d3ee", label:"Research Direction"},
   sae:       {color:"#3b82f6", label:"SAE foundations"},
@@ -73,14 +73,14 @@ const CAT = {
 
 const META = {
   sharkey25:{ttl:"Open Problems in Mechanistic Interpretability",who:"Sharkey, Bushnaq, Heimersheim, … et al. · 2025",cat:"core",
-    role:"The field's consensus map of what interpretability can and can't yet do. Its Section 7 names multi-agent / multi-model settings as an unsolved open problem — the exact gap this project attacks.",url:"https://arxiv.org/abs/2501.16496"},
+    role:"The field's consensus map of what interpretability can and can't yet do. Its Section 7 names multi-agent / multi-model settings as an unsolved open problem - the exact gap this project attacks.",url:"https://arxiv.org/abs/2501.16496"},
   project:{ttl:"sae-deception-multiagent-rag (this project)",who:"Vidura · BlueDot Technical AI Safety · 2026",cat:"project",
-    role:"Bridges three Shallow-Review agendas — Sparse Coding × Lie/Deception Detectors × Tools for Aligning Multiple AIs — by instrumenting SAEs, probes and attribution graphs across a LangGraph RAG pipeline.",url:"./README.md"},
-  d1:{ttl:"Direction 1 — Cross-agent activation transfer",who:"Hypothesis + falsifier",cat:"direction",
+    role:"Bridges three Shallow-Review agendas - Sparse Coding × Lie/Deception Detectors × Tools for Aligning Multiple AIs - by instrumenting SAEs, probes and attribution graphs across a LangGraph RAG pipeline.",url:"./README.md"},
+  d1:{ttl:"Direction 1 - Cross-agent activation transfer",who:"Hypothesis + falsifier",cat:"direction",
     role:"If an adversarial feature in Agent A reappears in Agent B's forward pass, that transfer may be a deception tripwire. Falsifier: combined-probe AUROC ≈ writer-only across ≥2 layer combos.",url:"./README.md"},
-  d2:{ttl:"Direction 2 — Does retrieval amplify or suppress?",who:"Hypothesis + falsifier",cat:"direction",
+  d2:{ttl:"Direction 2 - Does retrieval amplify or suppress?",who:"Hypothesis + falsifier",cat:"direction",
     role:"Is the retrieval step an amplifier of latent adversarial features, or a filter? Falsifier: amplification ratios concentrated near 1.0 (retrieval is neutral).",url:"./README.md"},
-  d3:{ttl:"Direction 3 — Generalising probes across model families",who:"Hypothesis + falsifier",cat:"direction",
+  d3:{ttl:"Direction 3 - Generalising probes across model families",who:"Hypothesis + falsifier",cat:"direction",
     role:"Do SAE probes trained on Gemma transfer to Llama / Mistral? Falsifier: cross-architecture AUROC drops to chance.",url:"./README.md"},
 
   templeton24:{ttl:"Scaling Monosemanticity",who:"Templeton et al. · 2024",cat:"sae",
@@ -92,22 +92,22 @@ const META = {
   saebench:{ttl:"SAEBench",who:"Karvonen et al. · 2025",cat:"sae",
     role:"Standardised SAE evaluation suite (incl. TopK SAEs), used to sanity-check that JumpReLU comparisons aren't apples-to-oranges (assumption A3.5).",url:"https://scholar.google.com/scholar?q=SAEBench+Karvonen+sparse+autoencoder+benchmark"},
   bills23:{ttl:"Language Models Can Explain Neurons",who:"Bills et al. · 2023",cat:"tool",
-    role:"Original auto-interp: explainer scores average 0.3–0.5. Sets the reliability ceiling for the feature-labelling step (assumption A2.5).",url:"https://openaipublic.blob.core.windows.net/neuron-explainer/paper/index.html"},
+    role:"Original auto-interp: explainer scores average 0.3-0.5. Sets the reliability ceiling for the feature-labelling step (assumption A2.5).",url:"https://openaipublic.blob.core.windows.net/neuron-explainer/paper/index.html"},
   delphi:{ttl:"delphi / sae-auto-interp",who:"EleutherAI",cat:"tool",
     role:"Open auto-interp pipeline used to attach natural-language labels to the top discriminative SAE features.",url:"https://github.com/EleutherAI/delphi"},
 
   ameisen25:{ttl:"Circuit Tracing (Attribution Graph Methods)",who:"Ameisen et al. · 2025",cat:"attrib",
-    role:"The attribution-graph methodology this project lifts from single-model to the multi-agent setting — the project's core methodological bet (assumption A1.5).",url:"https://transformer-circuits.pub/2025/attribution-graphs/methods.html"},
+    role:"The attribution-graph methodology this project lifts from single-model to the multi-agent setting - the project's core methodological bet (assumption A1.5).",url:"https://transformer-circuits.pub/2025/attribution-graphs/methods.html"},
   lindsey25:{ttl:"On the Biology of a Large Language Model",who:"Lindsey et al. · 2025",cat:"attrib",
     role:"Attribution graphs applied to trace real mechanisms. The 'what a finished trace looks like' reference for extending graphs across agent boundaries.",url:"https://transformer-circuits.pub/2025/attribution-graphs/biology.html"},
 
   macdiarmid24:{ttl:"Simple Probes Catch Sleeper Agents",who:"MacDiarmid et al. · 2024",cat:"probe",
-    role:"Linear probes hit AUROC > 0.99 on backdoored models. The number to beat — and the optimistic baseline tested for over-cleanliness (assumption A1.4).",url:"https://www.anthropic.com/research/probes-catch-sleeper-agents"},
+    role:"Linear probes hit AUROC > 0.99 on backdoored models. The number to beat - and the optimistic baseline tested for over-cleanliness (assumption A1.4).",url:"https://www.anthropic.com/research/probes-catch-sleeper-agents"},
   goldowsky25:{ttl:"Detecting Strategic Deception Using Linear Probes",who:"Goldowsky-Dill et al. · 2025",cat:"probe",
     role:"A more realistic deception setting (~0.95 AUROC, insider trading). The honest baseline this project measures itself against.",url:"https://www.lesswrong.com/posts/9pGbTz6c78PGwJein/detecting-strategic-deception-using-linear-probes"},
 
   heap25:{ttl:"Sparse Autoencoders on Random Transformers",who:"Heap et al. · 2025",cat:"critique",
-    role:"Shows SAEs produce 'interpretable' features even on randomly-initialised models. Directly motivates the random-init control (assumption A1.1) — already triggered in the de-risk run.",url:"https://arxiv.org/abs/2501.17727"},
+    role:"Shows SAEs produce 'interpretable' features even on randomly-initialised models. Directly motivates the random-init control (assumption A1.1) - already triggered in the de-risk run.",url:"https://arxiv.org/abs/2501.17727"},
   paulo25:{ttl:"SAE Features Unstable Across Seeds",who:"Paulo & Belrose · 2025",cat:"critique",
     role:"Two SAEs, same data, different seeds → substantially different features. Caps how strongly any single 'deception feature' claim can be made (assumption A1.2).",url:"https://arxiv.org/abs/2501.16615"},
 

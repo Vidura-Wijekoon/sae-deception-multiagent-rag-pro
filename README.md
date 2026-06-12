@@ -2,27 +2,27 @@
 
 **Probing for deception in multi-agent RAG pipelines using sparse autoencoders, linear probes, and attribution graphs.**
 
-> Status: **Research preview, de-risk phase.** Not for production use. Results may be null, partial, or revised. See [Phase 7 — De-Risk Review](#roadmap) for milestone definitions.
+> Status: **Research preview, de-risk phase.** Not for production use. Results may be null, partial, or revised. See [Phase 7 - De-Risk Review](#roadmap) for milestone definitions.
 
 ---
 
 ## The one-paragraph version
 
-We can't see inside multi-agent LLM systems when they're behaving badly. If one agent manipulates another through a shared context window — deliberately, or through indirect prompt injection in a retrieved document — there is no reliable mechanism today for catching it before harmful output appears. This project takes three single-model interpretability tools — sparse autoencoders (SAEs), linear probes, and attribution graphs — and instruments them across a LangGraph retrieval-augmented generation (RAG) pipeline. The goal is to test whether deceptive or adversarial activation patterns are detectable *between* agents, not just *within* one. The project is anchored on Sharkey et al. (2025), *Open Problems in Mechanistic Interpretability*, which explicitly names multi-agent and multi-model settings as an open problem.
+We can't see inside multi-agent LLM systems when they're behaving badly. If one agent manipulates another through a shared context window - deliberately, or through indirect prompt injection in a retrieved document - there is no reliable mechanism today for catching it before harmful output appears. This project takes three single-model interpretability tools - sparse autoencoders (SAEs), linear probes, and attribution graphs - and instruments them across a LangGraph retrieval-augmented generation (RAG) pipeline. The goal is to test whether deceptive or adversarial activation patterns are detectable *between* agents, not just *within* one. The project is anchored on Sharkey et al. (2025), *Open Problems in Mechanistic Interpretability*, which explicitly names multi-agent and multi-model settings as an open problem.
 
 ---
 
 ## Why this matters
 
-Agentic LLM deployments are scaling faster than the interpretability tooling that should oversee them. The 2025 mechanistic-interpretability consensus paper ([Sharkey et al., 2025](https://arxiv.org/abs/2501.16496)) maps the tools we have for seeing inside single models — sparse autoencoders, attribution graphs, linear probes — and flags multi-agent settings as an unsolved gap. Concurrently, attack research has demonstrated that retrieval-augmented agents are vulnerable to indirect prompt injection ([Greshake et al., 2023](https://arxiv.org/abs/2302.12173)), knowledge-base poisoning ([Zou et al., 2024 — PoisonedRAG](https://arxiv.org/abs/2402.07867)), and memory backdoors ([Chen et al., 2024 — AgentPoison](https://arxiv.org/abs/2407.12784)) with attack-success rates above 80% at poison rates below 0.1%.
+Agentic LLM deployments are scaling faster than the interpretability tooling that should oversee them. The 2025 mechanistic-interpretability consensus paper ([Sharkey et al., 2025](https://arxiv.org/abs/2501.16496)) maps the tools we have for seeing inside single models - sparse autoencoders, attribution graphs, linear probes - and flags multi-agent settings as an unsolved gap. Concurrently, attack research has demonstrated that retrieval-augmented agents are vulnerable to indirect prompt injection ([Greshake et al., 2023](https://arxiv.org/abs/2302.12173)), knowledge-base poisoning ([Zou et al., 2024 - PoisonedRAG](https://arxiv.org/abs/2402.07867)), and memory backdoors ([Chen et al., 2024 - AgentPoison](https://arxiv.org/abs/2407.12784)) with attack-success rates above 80% at poison rates below 0.1%.
 
-This project sits at the intersection of three Shallow Review 2025 agendas: [Sparse Coding](https://shallowreview.ai/White_box_safety/Sparse_Coding) (≈50–100 FTEs), [Lie and Deception Detectors](https://shallowreview.ai/White_box_safety/Lie_and_deception_detectors) (≈10–50 FTEs), and the under-resourced [Tools for Aligning Multiple AIs](https://shallowreview.ai/Multi_agent_first/Tools_for_aligning_multiple_AIs) (≈10–15 FTEs). The contribution is the bridge.
+This project sits at the intersection of three Shallow Review 2025 agendas: [Sparse Coding](https://shallowreview.ai/White_box_safety/Sparse_Coding) (≈50-100 FTEs), [Lie and Deception Detectors](https://shallowreview.ai/White_box_safety/Lie_and_deception_detectors) (≈10-50 FTEs), and the under-resourced [Tools for Aligning Multiple AIs](https://shallowreview.ai/Multi_agent_first/Tools_for_aligning_multiple_AIs) (≈10-15 FTEs). The contribution is the bridge.
 
 ---
 
 ## The three Directions
 
-### Direction 1 — Cross-agent activation transfer as a deception signal
+### Direction 1 - Cross-agent activation transfer as a deception signal
 
 > *If an adversarial feature activates in Agent A and a structurally similar feature appears in Agent B's next forward pass, that pattern of transfer across the context boundary may be a more reliable deception signal than any single-agent probe.*
 
@@ -32,9 +32,9 @@ This project sits at the intersection of three Shallow Review 2025 agendas: [Spa
 
 **Falsifier.** Combined-probe AUROC indistinguishable from writer-only AUROC across at least two layer combinations.
 
-**Closest prior art.** [Marks et al., 2024 — Sparse Feature Circuits](https://arxiv.org/abs/2403.19647); [Templeton et al., 2024 — Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity).
+**Closest prior art.** [Marks et al., 2024 - Sparse Feature Circuits](https://arxiv.org/abs/2403.19647); [Templeton et al., 2024 - Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity).
 
-### Direction 2 — Does retrieval amplify or suppress adversarial features?
+### Direction 2 - Does retrieval amplify or suppress adversarial features?
 
 > *The retrieval step is the most under-examined attack surface in a RAG pipeline. Injected documents could either activate latent deceptive features or drown them out.*
 
@@ -42,21 +42,21 @@ This project sits at the intersection of three Shallow Review 2025 agendas: [Spa
 
 **Method.** Measure top-feature activations in the writer across three conditions: (a) no context, (b) clean retrieved context, (c) poisoned retrieved context. Compute amplification ratios per feature.
 
-**Falsifier.** Amplification ratios concentrated near 1.0 across all feature axes (i.e. retrieval is neither amplifier nor filter — it's neutral).
+**Falsifier.** Amplification ratios concentrated near 1.0 across all feature axes (i.e. retrieval is neither amplifier nor filter - it's neutral).
 
-**Closest prior art.** [Zou et al., 2024 — PoisonedRAG](https://arxiv.org/abs/2402.07867); [Chen et al., 2024 — AgentPoison](https://arxiv.org/abs/2407.12784).
+**Closest prior art.** [Zou et al., 2024 - PoisonedRAG](https://arxiv.org/abs/2402.07867); [Chen et al., 2024 - AgentPoison](https://arxiv.org/abs/2407.12784).
 
-### Direction 3 — Generalising probes across model families
+### Direction 3 - Generalising probes across model families
 
 > *SAE probes trained on a LangGraph pipeline running Gemma may not transfer to one running Llama or Mistral.*
 
-**Hypothesis.** If probes generalise across model families, deceptive representations are likely a universal property of the multi-agent setting. If they don't, deception is architecture-specific — with serious implications for any cross-model safety monitoring system.
+**Hypothesis.** If probes generalise across model families, deceptive representations are likely a universal property of the multi-agent setting. If they don't, deception is architecture-specific - with serious implications for any cross-model safety monitoring system.
 
 **Method.** Train SAE probes on Gemma 2-2B + Gemma Scope. Evaluate on (a) Llama 3.2-3B + community SAEs, (b) Mistral-7B + Llama Scope analogues, in identical LangGraph pipelines and on identical attack sets.
 
 **Falsifier.** Cross-architecture transfer AUROC drops to chance.
 
-**Closest prior art.** [MacDiarmid et al., 2024 — Simple Probes Catch Sleeper Agents](https://www.anthropic.com/research/probes-catch-sleeper-agents).
+**Closest prior art.** [MacDiarmid et al., 2024 - Simple Probes Catch Sleeper Agents](https://www.anthropic.com/research/probes-catch-sleeper-agents).
 
 ---
 
@@ -83,7 +83,7 @@ sae-deception-multiagent-rag/
 ├── Makefile                        (make install / dev / hooks / test / smoke / clean)
 ├── pyproject.toml                  (src/ layout, ruff, black, pytest, setuptools-scm)
 ├── requirements.txt                (runtime deps; dev extras in pyproject.toml)
-├── safety-tooling/                 (git submodule — LLM API, prompt utils, env setup)
+├── safety-tooling/                 (git submodule - LLM API, prompt utils, env setup)
 ├── configs/
 │   └── default.yaml                (added in Phase 1 step 17)
 ├── src/
@@ -119,15 +119,15 @@ The full plan lives in `docs/build_guide.md` (80 steps across 8 phases). Phase g
 | Phase | Gate | Status |
 |---|---|---|
 | 0 | Environment + Sharkey/Ameisen/Lindsey read | done |
-| 1 | Working LangGraph RAG, 50 queries, caching | **done** (real LangGraph `StateGraph`, retriever→writer — `src/sae_deception/pipeline/graph.py`) |
+| 1 | Working LangGraph RAG, 50 queries, caching | **done** (real LangGraph `StateGraph`, retriever→writer - `src/sae_deception/pipeline/graph.py`) |
 | 2 | Activations captured per agent per query | **proxy ✓** (MiniLM views cached to `data/acts/`; Gemma/TL capture pending GPU) |
 | 3 | Gemma Scope SAE attached, top features labeled | not started (GPU) |
 | 4 | 120-example attack set with measured success rate | **done** (120 contexts, naive+hardened; retrieval success 1.00, gate A2.1 PASS) |
 | 5 | Per-layer AUROC: raw vs SAE vs random-init control | **proxy ✓** (per-representation AUROC + bootstrap CIs + random-init control) |
-| 6 | Cross-agent transfer signal: correlational + causal | **proxy ✓** (causal harness: context-swap do()-intervention + feature ablation with random-dims control — `scripts/run_phase6.py`, results in `experiments/260605_phase5_probe_derisk/phase6_ablation.json`) |
+| 6 | Cross-agent transfer signal: correlational + causal | **proxy ✓** (causal harness: context-swap do()-intervention + feature ablation with random-dims control - `scripts/run_phase6.py`, results in `experiments/260605_phase5_probe_derisk/phase6_ablation.json`) |
 | 7 | 1-page summary + cohort feedback + extended-mode decision | de-risk summary written; cohort feedback pending |
 
-An interactive dashboard over all of the above (probe results, causal arms, attack-corpus browser, and a **live two-agent pipeline playground** with a deception-probe readout) ships in `app/streamlit_app.py` — run `make ui`.
+An interactive dashboard over all of the above (probe results, causal arms, attack-corpus browser, and a **live two-agent pipeline playground** with a deception-probe readout) ships in `app/streamlit_app.py` - run `make ui`.
 
 > **De-risk run 2026-06-05** (`experiments/260605_phase5_probe_derisk/`): the Phase 1/4/5 harness runs end-to-end on a CPU proxy (MiniLM embeddings standing in for Gemma+SAE features). Headline findings: naive attack labels are lexically trivial (random-init control AUROC 1.00); hardened factual poisoning is undetectable by a frozen probe (≈chance); "combined" never beats writer-only, so the cross-agent claim needs the Phase-6 causal ablation, not correlational AUROC. See `experiments/260605_phase5_probe_derisk/results.md`. Swapping `representation: gemma_sae` in `configs/default.yaml` reruns the same analysis on a GPU.
 
@@ -155,8 +155,8 @@ make smoke
 No GPU? The full de-risk pipeline runs on CPU:
 
 ```bash
-make experiment   # Phase 1/4/5 — corpus, pipeline, probes, controls
-make phase6       # Phase 6 — causal context-swap + feature ablation
+make experiment   # Phase 1/4/5 - corpus, pipeline, probes, controls
+make phase6       # Phase 6 - causal context-swap + feature ablation
 make ui           # Streamlit dashboard + live pipeline playground
 ```
 
@@ -206,12 +206,12 @@ Mistakes are mine, not theirs.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE). Choosing a permissive license because safety research benefits from being downstream-buildable; if you want to remix, fork, replicate, or extend, please do.
+MIT - see [LICENSE](./LICENSE). Choosing a permissive license because safety research benefits from being downstream-buildable; if you want to remix, fork, replicate, or extend, please do.
 
 ---
 
 ## Contact
 
-Vidura — `businessaividura@viduraaitech.space`
+Vidura - `businessaividura@viduraaitech.space`
 
 Issues: [GitHub Issues](https://github.com/Vidura-Wijekoon/sae-deception-multiagent-rag/issues) (preferred for technical questions and bug reports).

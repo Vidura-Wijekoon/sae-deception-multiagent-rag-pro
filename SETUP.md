@@ -31,11 +31,11 @@ pre-commit install --overwrite --install-hooks
 - **Location:** `.venv/`
 - **PyTorch:** CUDA 12.1 (`torch>=2.3`)
 - **Key packages:**
-  - `transformers>=4.44` — LLM inference
-  - `sae-lens>=4.0` — Sparse Autoencoders
-  - `langgraph>=0.2` — Multi-agent orchestration
-  - `faiss-cpu>=1.8` — Vector search
-  - `datasets>=3.0` — Data loading
+  - `transformers>=4.44` - LLM inference
+  - `sae-lens>=4.0` - Sparse Autoencoders
+  - `langgraph>=0.2` - Multi-agent orchestration
+  - `faiss-cpu>=1.8` - Vector search
+  - `datasets>=3.0` - Data loading
 
 ## Common Commands (from Makefile)
 

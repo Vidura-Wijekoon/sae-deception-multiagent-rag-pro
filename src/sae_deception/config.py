@@ -33,7 +33,7 @@ class ExperimentConfig:
 
     The single most important field is `representation`. On CPU it is one of
     {"neural", "tfidf_svd", "random_init"}. On a GPU, point it at the real
-    backend ("gemma_sae") and the rest of the pipeline is unchanged — that is
+    backend ("gemma_sae") and the rest of the pipeline is unchanged - that is
     the whole design goal of the de-risk phase.
     """
 
@@ -69,7 +69,7 @@ class ExperimentConfig:
     out_root: str = "experiments"
 
     def config_hash(self) -> str:
-        """Stable hash of the config (excludes nothing — full provenance)."""
+        """Stable hash of the config (excludes nothing - full provenance)."""
         blob = json.dumps(asdict(self), sort_keys=True, default=str)
         return hashlib.sha256(blob.encode()).hexdigest()[:12]
 

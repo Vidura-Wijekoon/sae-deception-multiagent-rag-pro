@@ -51,7 +51,7 @@ def fig_auroc(metrics: dict, out: Path) -> None:
         if style == "naive":
             ax.set_ylabel("probe AUROC (5-fold OOF, 95% CI)")
     axes[1].legend(["writer-only", "combined (W+R)"], loc="upper right", fontsize=8)
-    fig.suptitle("Probe AUROC by representation and attack style — random-init is the lexical-triviality control (A1.1)",
+    fig.suptitle("Probe AUROC by representation and attack style - random-init is the lexical-triviality control (A1.1)",
                  fontsize=11)
     fig.tight_layout(); fig.savefig(out, dpi=130); plt.close(fig)
 

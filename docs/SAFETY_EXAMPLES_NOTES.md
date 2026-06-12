@@ -2,7 +2,7 @@
 
 This file records what we took from
 [`safety-research/safety-examples`](https://github.com/safety-research/safety-examples)
-when scaffolding this repo, what we left out, and the reasoning — so future-you
+when scaffolding this repo, what we left out, and the reasoning - so future-you
 (and reviewers) can re-evaluate the decisions without re-reading the upstream
 repo.
 
@@ -46,12 +46,12 @@ The upstream README recommends forking the repo as a template. We chose
    existing repo (loses any incoming links and watchers) or maintaining two
    parallel repos.
 2. **The four load-bearing files are easy to copy.** Forking buys you a
-   git ancestry link to upstream — useful if you intend to upstream PRs
+   git ancestry link to upstream - useful if you intend to upstream PRs
    against the example code, irrelevant if (like us) you only depend on
    the submodule and the config files.
 
 If we ever want to upstream a feature into `safety-tooling`, we do that
-**through the submodule itself** — `cd safety-tooling && git checkout -b
+**through the submodule itself** - `cd safety-tooling && git checkout -b
 my-feature && ...`. The submodule is a real git repo, not a snapshot.
 
 ---
@@ -72,7 +72,7 @@ for f in .pre-commit-config.yaml pyproject.toml Makefile; do
 done
 ```
 
-Then cherry-pick by hand. Don't do a wholesale overwrite — our local
+Then cherry-pick by hand. Don't do a wholesale overwrite - our local
 deviations (renamed package, commented-out branch hook, src/ layout, our
 dependency pins) need to survive.
 

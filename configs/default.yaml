@@ -1,7 +1,7 @@
 # Default config for the probe de-risk run (build guide Phase 1 step 17).
 # Mirrors sae_deception.config.ExperimentConfig. The CPU de-risk uses
 # representation: neural. For the GPU run, set representation: gemma_sae and
-# fill in GemmaSAERepresenter (interp/represent.py) — nothing else changes.
+# fill in GemmaSAERepresenter (interp/represent.py) - nothing else changes.
 
 experiment_id: 260605_phase5_probe_derisk
 seed: 0

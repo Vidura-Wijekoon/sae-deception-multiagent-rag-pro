@@ -1,24 +1,24 @@
-"""Phase 6 — causal harness for Direction 1 (cross-agent transfer).
+"""Phase 6 - causal harness for Direction 1 (cross-agent transfer).
 
 The de-risk run showed combined-vs-writer AUROC cannot establish cross-agent
 transfer (the A3.2 confound: both agents see the same poisoned text). This
 module supplies the two causal arms the SUMMARY said the claim must rest on:
 
-1. **Context-swap intervention** (`context_swap_intervention`) — a do()
+1. **Context-swap intervention** (`context_swap_intervention`) - a do()
    operation on the retriever->writer channel, at the text level. For every
    attacked query whose poisoned doc reached the writer, we swap that doc for
    its clean counterpart (everything else in the context held fixed) and
    re-run the writer. Reported:
-     * necessity   — fraction of attack successes that *disappear* under the
+     * necessity   - fraction of attack successes that *disappear* under the
                      swap (poison was necessary for the behaviour);
-     * sufficiency — fraction of clean runs where *inserting* the poisoned doc
+     * sufficiency - fraction of clean runs where *inserting* the poisoned doc
                      makes the attack succeed (poison is sufficient);
-     * probe-score drop — mean fall in the writer deception-probe score when
+     * probe-score drop - mean fall in the writer deception-probe score when
                      the poison is swapped out. This is the activation-level
                      causal signal: if the probe tracks the *channel* rather
                      than incidental text, the score must fall.
 
-2. **Feature ablation** (`feature_ablation`) — the SAE-feature-ablation proxy.
+2. **Feature ablation** (`feature_ablation`) - the SAE-feature-ablation proxy.
    Identify top-k discriminative dims of the writer probe and of the retriever
    probe (full-data fit, standardised |coef|). Then mean-ablate, in the
    *writer* representation:
@@ -26,7 +26,7 @@ module supplies the two causal arms the SUMMARY said the claim must rest on:
      * the dims the *retriever* probe found (cross-agent transfer test), and
      * k random dims, R repeats             (control).
    If retriever-identified dims, ablated in the writer, drop writer AUROC well
-   beyond the random control, the two agents are using *shared feature axes* —
+   beyond the random control, the two agents are using *shared feature axes* -
    the cheap analog of "a structurally similar feature appears in Agent B"
    (README Direction 1). Overlap stats (observed vs hypergeometric-expected)
    are reported alongside.
@@ -47,7 +47,7 @@ from ..pipeline.state import GraphState
 from ..probes.train import run_probe
 
 # ---------------------------------------------------------------------------
-# Arm 2 — feature ablation (cross-agent shared-axis test)
+# Arm 2 - feature ablation (cross-agent shared-axis test)
 # ---------------------------------------------------------------------------
 
 def top_probe_dims(X: np.ndarray, y: np.ndarray, k: int, C: float = 1.0) -> np.ndarray:
@@ -64,7 +64,7 @@ def top_probe_dims(X: np.ndarray, y: np.ndarray, k: int, C: float = 1.0) -> np.n
 
 def mean_ablate(X: np.ndarray, dims: np.ndarray) -> np.ndarray:
     """Replace the chosen columns with their column mean (zero information,
-    distribution otherwise intact — the linear analog of SAE feature clamping)."""
+    distribution otherwise intact - the linear analog of SAE feature clamping)."""
     Xa = np.array(X, dtype=np.float64, copy=True)
     Xa[:, dims] = Xa[:, dims].mean(axis=0, keepdims=True)
     return Xa
@@ -124,7 +124,7 @@ def feature_ablation(
 
 
 # ---------------------------------------------------------------------------
-# Arm 1 — context-swap intervention (do() on the cross-agent channel)
+# Arm 1 - context-swap intervention (do() on the cross-agent channel)
 # ---------------------------------------------------------------------------
 
 def _probe_scorer(rep, examples: list[ContextExample], writer_view, C: float, seed: int):

@@ -2,10 +2,10 @@
 
 Runs the probe pipeline on TWO corpus variants so the result is interpretable:
 
-  * naive    — attacks carry obvious boilerplate. A random-init representation
+  * naive    - attacks carry obvious boilerplate. A random-init representation
                separates these at ~AUROC 1.0, proving the label is partly a
                lexical artefact (ASSUMPTIONS A1.1 / A2.3).
-  * hardened — low-signature attacks (PoisonedRAG = single answer-token swap;
+  * hardened - low-signature attacks (PoisonedRAG = single answer-token swap;
                Greshake = naturalistic instruction). Probing these tests whether
                a representation carries a *non-lexical* deception signal.
 
@@ -120,7 +120,7 @@ def run_experiment(cfg: ExperimentConfig, repo_root: Path) -> dict:
                     breakdown[t] = round(_auroc(y[mask], pw.oof_scores[mask]), 4)
                 metrics["per_attack_type_auroc"][style] = breakdown
 
-        # Direction 2 — amplification on the naive corpus (realistic attack content)
+        # Direction 2 - amplification on the naive corpus (realistic attack content)
         ex = corpora["naive"]
         by_qid: dict[int, dict] = {}
         for e in ex:

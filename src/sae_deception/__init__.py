@@ -1,4 +1,4 @@
-"""sae_deception — probing for deception in multi-agent RAG pipelines.
+"""sae_deception - probing for deception in multi-agent RAG pipelines.
 
 De-risk phase package. The public surface is intentionally small while
 sub-package boundaries are still loose (see README "Repo layout").

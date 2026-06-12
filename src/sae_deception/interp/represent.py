@@ -1,4 +1,4 @@
-"""Representation backends — the swappable "activation" layer.
+"""Representation backends - the swappable "activation" layer.
 
 This is the one module you change to move from the CPU de-risk run to the real
 Gemma 2-2B + Gemma Scope SAE run. Every backend implements the same tiny
@@ -10,22 +10,22 @@ interface:
     rep.revision                  # provenance string for the manifest
 
 CPU backends (real, runnable here):
-  * "neural"      — MiniLM (all-MiniLM-L6-v2) sentence embeddings via fastembed
+  * "neural"      - MiniLM (all-MiniLM-L6-v2) sentence embeddings via fastembed
                     (ONNX, no torch). A real pretrained-transformer representation;
                     the closest cheap analog to a model's pooled residual stream.
-  * "tfidf_svd"   — TF-IDF -> TruncatedSVD. A real, label-free classical
+  * "tfidf_svd"   - TF-IDF -> TruncatedSVD. A real, label-free classical
                     representation. Used as a representation-agnostic cross-check.
-  * "random_init" — random feature map (hashed char n-grams -> fixed random
+  * "random_init" - random feature map (hashed char n-grams -> fixed random
                     projection -> tanh). The control for ASSUMPTIONS A1.1: a
                     representation with NO trained features. If probes still
                     separate poisoned/clean here, the signal is lexically trivial.
 
 GPU backend (stub; the actual research target):
-  * "gemma_sae"   — wire transformer-lens activation capture + sae-lens Gemma
+  * "gemma_sae"   - wire transformer-lens activation capture + sae-lens Gemma
                     Scope encoding here. Raises a clear NotImplementedError that
                     explains exactly what to fill in.
 
-The probe + experiment code never imports any of these directly — it only ever
+The probe + experiment code never imports any of these directly - it only ever
 sees `encode(...) -> ndarray`, which is what makes the swap a one-liner.
 """
 
@@ -44,7 +44,7 @@ class Representer(Protocol):
 
 
 # ---------------------------------------------------------------------------
-# Neural — real MiniLM embeddings (fastembed / ONNX, torch-free)
+# Neural - real MiniLM embeddings (fastembed / ONNX, torch-free)
 # ---------------------------------------------------------------------------
 
 class NeuralRepresenter:
@@ -81,7 +81,7 @@ class NeuralRepresenter:
 
 
 # ---------------------------------------------------------------------------
-# TF-IDF -> SVD — real, label-free classical representation
+# TF-IDF -> SVD - real, label-free classical representation
 # ---------------------------------------------------------------------------
 
 class TfidfSvdRepresenter:
@@ -111,7 +111,7 @@ class TfidfSvdRepresenter:
 
 
 # ---------------------------------------------------------------------------
-# Random-init — untrained random feature map (control for A1.1)
+# Random-init - untrained random feature map (control for A1.1)
 # ---------------------------------------------------------------------------
 
 class RandomInitRepresenter:
@@ -121,7 +121,7 @@ class RandomInitRepresenter:
     analog of running the whole pipeline on a randomly-initialised model
     (Heap et al. 2025). It still has lexical access to the text, so a *high*
     AUROC here means the attack signal is lexically trivial rather than a
-    learned-feature phenomenon — exactly the thing the A1.1 control is for.
+    learned-feature phenomenon - exactly the thing the A1.1 control is for.
     """
 
     def __init__(self, dim: int = 384, seed: int = 0, n_hash: int = 2048):
@@ -145,7 +145,7 @@ class RandomInitRepresenter:
 
 
 # ---------------------------------------------------------------------------
-# Gemma + SAE — the real research target (GPU). Stub.
+# Gemma + SAE - the real research target (GPU). Stub.
 # ---------------------------------------------------------------------------
 
 class GemmaSAERepresenter:
