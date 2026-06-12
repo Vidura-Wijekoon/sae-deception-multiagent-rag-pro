@@ -71,13 +71,56 @@ Replacing `representation: neural` with `representation: gemma_sae` in `configs/
 
 ## Key Results (CPU De-Risk Phase)
 
-All numbers below were produced on the CPU proxy representation and bound the method, not the phenomenon. Full detail: `experiments/260605_phase5_probe_derisk/results.md`.
+All numbers below were produced on the CPU proxy representation (MiniLM standing in for Gemma 2-2B + Gemma Scope SAE features) and bound the method, not the phenomenon. Every result reproduces bit-for-bit from a single command. Full detail: [`experiments/260605_phase5_probe_derisk/results.md`](experiments/260605_phase5_probe_derisk/results.md).
 
-1. **Attack-presence labels are lexically confounded.** A representation with no trained parameters achieves AUROC 1.000 on boilerplate-style attacks. Every headline metric must therefore be reported alongside a random-initialisation control.
-2. **Frozen-feature probes do not detect hardened factual poisoning.** When the attack is reduced to a single-token factual substitution, probe AUROC falls to chance (0.50, 95% CI [0.39, 0.60]). Indirect prompt injection remains detectable (0.86) because injected instructions are intrinsically out-of-distribution text. These are distinct detection problems and are reported separately.
-3. **Correlational cross-agent signal is confounded.** Combined writer-plus-retriever probes never significantly outperform writer-only probes, because both agents observe the same poisoned text. The cross-agent claim therefore rests on causal evidence (Phase 6).
-4. **Causal evidence supports the channel hypothesis (proxy).** Under a context-swap intervention (replacing the poisoned document with its clean counterpart, all else fixed): attack behaviour is removed in 59/60 cases (necessity 0.98), created in 59/60 cases when inserted (sufficiency 0.98), and the writer's deception-probe score falls on 100% of interventions (mean -0.30). In the feature-ablation arm, ablating in the writer the dimensions identified by the retriever probe costs approximately 4.7 standard deviations more AUROC than ablating random dimensions, with a top-32 dimension overlap of 13-14 versus 2.67 expected by chance.
-5. **Retrieval is approximately neutral in representation space** (median amplification ratio 0.99), consistent with the Direction 2 falsifier on this proxy.
+### Headline statistics
+
+| Metric | Value | Interpretation |
+|---|---|---|
+| Poison retrieval rate (top-4) | **1.00** | Phase 4 gate (>= 0.30): **PASS** |
+| Attack success (worst-case reader) | 1.00 | Upper bound; generative writer pending GPU |
+| Writer-probe AUROC, naive attacks (MiniLM) | 0.981 [0.96, 1.00] | High, but see the control below |
+| Writer-probe AUROC, naive attacks (random-init control) | **1.000** | Naive labels are lexically trivial |
+| Writer-probe AUROC, hardened attacks (MiniLM) | **0.497** [0.39, 0.60] | Chance: frozen probes miss factual poisoning |
+| Hardened AUROC by attack family (MiniLM) | PoisonedRAG 0.138 / Greshake 0.855 | Injection detectable; factual lies are not |
+| Combined minus writer-only AUROC (all settings) | +0.00 to +0.05 | Correlational transfer signal: null |
+| Context-swap necessity / sufficiency | **0.98 / 0.98** | Poisoned document causally drives the behaviour |
+| Probe-score drop under context swap | mean -0.30; fell on **100%** of queries | Probe tracks the cross-agent channel |
+| Transfer feature-ablation effect | **~4.7 sigma** beyond random control | Agents share discriminative feature axes |
+| Writer-retriever top-32 dimension overlap | 13-14 observed vs 2.67 by chance | Shared-axis precondition for Direction 1 |
+| Median retrieval amplification ratio | 0.99 | Retrieval is approximately neutral (Direction 2) |
+
+### Figure 1 - Probe performance and the lexical-triviality control
+
+Linear-probe AUROC (5-fold out-of-fold, 95% bootstrap CI) per representation and attack style. On naive attacks the untrained random-init control reaches AUROC 1.0, proving the label is decodable from surface text; on hardened attacks all representations fall to approximately chance.
+
+![Probe AUROC by representation and attack style](experiments/260605_phase5_probe_derisk/figures/fig1_auroc_by_representation.png)
+
+### Figure 2 - Injection detection and factual-lie detection are different problems
+
+Hardened factual poisoning (PoisonedRAG, a single-token lie) is undetectable by a frozen-feature probe (0.138, below chance), while hardened indirect prompt injection (Greshake) retains a strong signature (0.855) because injected instructions are intrinsically foreign text.
+
+![Per-attack-type AUROC](experiments/260605_phase5_probe_derisk/figures/fig2_per_attack_type.png)
+
+### Figure 3 - Retrieval is approximately neutral in representation space
+
+Per-feature activation ratios (poisoned versus clean context) cluster at 1.0 with a modest amplified tail (13.3% of features above 1.2x), consistent with the pre-registered Direction 2 neutrality falsifier on this proxy.
+
+![Retrieval amplification histogram](experiments/260605_phase5_probe_derisk/figures/fig3_amplification.png)
+
+### Figure 4 - Causal evidence for the cross-agent channel (Phase 6)
+
+Left: swapping the poisoned document for its clean counterpart (a do()-intervention on the retriever-writer channel) collapses the writer's deception-probe score on every query (necessity 0.98, sufficiency 0.98). Right: mean-ablating, in the writer, the feature dimensions identified by the retriever probe costs approximately 4.7 standard deviations more AUROC than ablating random dimensions - evidence the two agents read the deception signal off shared feature axes.
+
+![Phase 6 causal results](experiments/260605_phase5_probe_derisk/figures/fig4_phase6_causal.png)
+
+### Findings in brief
+
+1. **Attack-presence labels are lexically confounded.** A representation with no trained parameters achieves AUROC 1.000 on boilerplate-style attacks (Figure 1). Every headline metric must therefore be reported alongside a random-initialisation control.
+2. **Frozen-feature probes do not detect hardened factual poisoning.** Probe AUROC falls to chance on single-token lies, while indirect prompt injection remains detectable (Figure 2). These are distinct detection problems and are reported separately.
+3. **Correlational cross-agent signal is confounded.** Combined writer-plus-retriever probes never significantly outperform writer-only probes, because both agents observe the same poisoned text. The cross-agent claim therefore rests on causal evidence.
+4. **Causal evidence supports the channel hypothesis (proxy).** Both the context-swap intervention and the cross-agent feature-ablation arm produce large, control-referenced effects (Figure 4).
+5. **Retrieval is approximately neutral in representation space** (Figure 3), consistent with the Direction 2 falsifier on this proxy.
 
 ## Repository Structure
 

@@ -118,6 +118,49 @@ def fig_amplification(repo_root: Path, exp_id: str, out: Path) -> None:
     fig.tight_layout(); fig.savefig(out, dpi=130); plt.close(fig)
 
 
+def fig_phase6(phase6: dict, out: Path) -> None:
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.6))
+
+    # Panel A - context-swap intervention: paired probe scores per query
+    cs = phase6["context_swap"]
+    f = np.array([q["probe_score_factual"] for q in cs["per_query"]])
+    c = np.array([q["probe_score_counterfactual"] for q in cs["per_query"]])
+    for fi, ci in zip(f, c):
+        ax1.plot([0, 1], [fi, ci], color=C_NEU, alpha=0.25, lw=1)
+    ax1.scatter(np.zeros(len(f)), f, s=18, color=C_RAND, zorder=3, label="factual (poison in context)")
+    ax1.scatter(np.ones(len(c)), c, s=18, color=C_TFIDF, zorder=3, label="counterfactual (poison swapped out)")
+    ax1.axhline(0.5, ls="--", c="gray", lw=1)
+    ax1.set_xticks([0, 1]); ax1.set_xticklabels(["factual", "counterfactual"])
+    ax1.set_xlim(-0.4, 1.4); ax1.set_ylim(0, 1.02)
+    ax1.set_ylabel("writer deception-probe score  P(poisoned)")
+    ax1.set_title(f"Context-swap do()-intervention\nscore fell on {cs['frac_queries_probe_score_fell']:.0%} of queries "
+                  f"(mean drop {cs['probe_score_drop_mean']:.2f}); necessity {cs['necessity_flip_rate']:.2f}, "
+                  f"sufficiency {cs['sufficiency_flip_rate']:.2f}", fontsize=9.5)
+    ax1.legend(fontsize=8, loc="center right")
+
+    # Panel B - feature ablation: AUROC drop per arm, grouped by corpus style
+    styles = list(phase6["feature_ablation"].keys())
+    arms = [("drop_ablate_writer_top_dims", "writer's own\ntop-k dims", C_NEU),
+            ("drop_ablate_retriever_top_dims_in_writer", "retriever's top-k\nin writer (transfer)", C_RAND),
+            ("drop_ablate_random_dims_mean", "random k dims\n(control)", "#9ca3af")]
+    xs = np.arange(len(arms))
+    w = 0.36
+    for j, style in enumerate(styles):
+        fa = phase6["feature_ablation"][style]
+        vals = [fa[k] for k, _, _ in arms]
+        errs = [0, 0, fa["drop_ablate_random_dims_std"]]
+        ax2.bar(xs + (j - 0.5) * w, vals, width=w, color=[c for _, _, c in arms],
+                alpha=0.85 if j == 0 else 0.5, hatch=None if j == 0 else "//",
+                edgecolor="black", linewidth=0.6, yerr=errs, capsize=3)
+    ax2.set_xticks(xs); ax2.set_xticklabels([lab for _, lab, _ in arms], fontsize=8.5)
+    ax2.set_ylabel("writer-probe AUROC drop after mean-ablation")
+    sig = phase6["feature_ablation"][styles[0]]["transfer_drop_sigma_vs_random"]
+    ax2.set_title(f"Feature ablation (k=32 of 384 dims)\ntransfer arm = {sig:.1f} sigma beyond the random control "
+                  f"(solid: naive, hatched: hardened)", fontsize=9.5)
+    fig.suptitle("Phase 6 - causal evidence for the cross-agent channel (CPU proxy)", fontsize=11)
+    fig.tight_layout(); fig.savefig(out, dpi=130); plt.close(fig)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo-root", default=str(REPO_DEFAULT))
@@ -130,6 +173,9 @@ def main() -> None:
     fig_auroc(metrics, figs / "fig1_auroc_by_representation.png")
     fig_per_attack(repo, args.experiment, figs / "fig2_per_attack_type.png")
     fig_amplification(repo, args.experiment, figs / "fig3_amplification.png")
+    p6_path = exp_dir / "phase6_ablation.json"
+    if p6_path.exists():
+        fig_phase6(json.loads(p6_path.read_text()), figs / "fig4_phase6_causal.png")
     print("wrote figures to", figs)
 
 
