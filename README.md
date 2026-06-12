@@ -8,6 +8,10 @@
 
 ---
 
+## Animated Explainer
+
+A self-contained, 3Blue1Brown-style animated walkthrough of the entire project (the problem, the pipeline, the attacks, the probe, the controls, and the causal test) lives at [`docs/project_explainer.html`](docs/project_explainer.html). Download and open it in any browser - it is a single HTML file with no dependencies, with play/pause, scene navigation, and scrubbing.
+
 ## Overview
 
 Multi-agent LLM systems currently lack reliable mechanisms for detecting manipulation that propagates between agents through a shared context window, whether introduced deliberately or via indirect prompt injection in retrieved documents. This project adapts three single-model interpretability techniques - sparse autoencoders (SAEs), linear probes, and attribution-style causal analysis - and instruments them across a LangGraph retriever-writer pipeline, in order to test whether deceptive or adversarial activation patterns are detectable *between* agents rather than only *within* a single model.
