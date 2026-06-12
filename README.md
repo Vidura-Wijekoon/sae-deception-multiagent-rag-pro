@@ -92,6 +92,8 @@ sae-deception-multiagent-rag/
 │       ├── probes/                 Linear + SAE probe training and eval
 │       ├── attacks/                PoisonedRAG + Greshake attack adapters
 │       └── interp/                 Activation capture, SAE wrappers, auto-interp glue
+├── app/
+│   └── streamlit_app.py            Interactive dashboard (make ui)
 ├── experiments/
 │   └── YYMMDD_<name>/              One folder per experiment. Notebooks live here.
 ├── notebooks/                      Exploratory only. Move to experiments/ when shareable.
@@ -100,7 +102,10 @@ sae-deception-multiagent-rag/
 │   ├── literature_survey.md        Mirror of the Word doc
 │   └── SAFETY_EXAMPLES_NOTES.md    What we cherry-picked from safety-examples, and why
 └── scripts/
-    └── init_repo.sh                Run once to bootstrap git + first commit
+    ├── init_repo.sh                Run once to bootstrap git + first commit
+    ├── run_experiment.py           Phase 1/4/5 de-risk experiment (single command)
+    ├── run_phase6.py               Phase 6 causal harness (context swap + ablation)
+    └── plot_results.py             Figures from metrics.json
 ```
 
 Sub-package boundaries are loose during the de-risk phase. Refactor when (and only when) you transition to extended-project mode.
@@ -113,14 +118,18 @@ The full plan lives in `docs/build_guide.md` (80 steps across 8 phases). Phase g
 
 | Phase | Gate | Status |
 |---|---|---|
-| 0 | Environment + Sharkey/Ameisen/Lindsey read | not started |
-| 1 | Working LangGraph RAG, 50 queries, caching | not started |
-| 2 | Activations captured per agent per query | not started |
-| 3 | Gemma Scope SAE attached, top features labeled | not started |
-| 4 | 120-example attack set with measured success rate | not started |
-| 5 | Per-layer AUROC: raw vs SAE vs random-init control | not started |
-| 6 | Cross-agent transfer signal: correlational + causal | not started |
-| 7 | 1-page summary + cohort feedback + extended-mode decision | not started |
+| 0 | Environment + Sharkey/Ameisen/Lindsey read | done |
+| 1 | Working LangGraph RAG, 50 queries, caching | **done** (real LangGraph `StateGraph`, retriever→writer — `src/sae_deception/pipeline/graph.py`) |
+| 2 | Activations captured per agent per query | **proxy ✓** (MiniLM views cached to `data/acts/`; Gemma/TL capture pending GPU) |
+| 3 | Gemma Scope SAE attached, top features labeled | not started (GPU) |
+| 4 | 120-example attack set with measured success rate | **done** (120 contexts, naive+hardened; retrieval success 1.00, gate A2.1 PASS) |
+| 5 | Per-layer AUROC: raw vs SAE vs random-init control | **proxy ✓** (per-representation AUROC + bootstrap CIs + random-init control) |
+| 6 | Cross-agent transfer signal: correlational + causal | **proxy ✓** (causal harness: context-swap do()-intervention + feature ablation with random-dims control — `scripts/run_phase6.py`, results in `experiments/260605_phase5_probe_derisk/phase6_ablation.json`) |
+| 7 | 1-page summary + cohort feedback + extended-mode decision | de-risk summary written; cohort feedback pending |
+
+An interactive dashboard over all of the above (probe results, causal arms, attack-corpus browser, and a **live two-agent pipeline playground** with a deception-probe readout) ships in `app/streamlit_app.py` — run `make ui`.
+
+> **De-risk run 2026-06-05** (`experiments/260605_phase5_probe_derisk/`): the Phase 1/4/5 harness runs end-to-end on a CPU proxy (MiniLM embeddings standing in for Gemma+SAE features). Headline findings: naive attack labels are lexically trivial (random-init control AUROC 1.00); hardened factual poisoning is undetectable by a frozen probe (≈chance); "combined" never beats writer-only, so the cross-agent claim needs the Phase-6 causal ablation, not correlational AUROC. See `experiments/260605_phase5_probe_derisk/results.md`. Swapping `representation: gemma_sae` in `configs/default.yaml` reruns the same analysis on a GPU.
 
 ---
 
@@ -141,6 +150,14 @@ make dev          # = git submodule init + pip install -e safety-tooling + pip i
 
 # 3. Smoke test (loads Gemma 2-2B, single fwd pass, prints tok/s)
 make smoke
+```
+
+No GPU? The full de-risk pipeline runs on CPU:
+
+```bash
+make experiment   # Phase 1/4/5 — corpus, pipeline, probes, controls
+make phase6       # Phase 6 — causal context-swap + feature ablation
+make ui           # Streamlit dashboard + live pipeline playground
 ```
 
 Detailed step-by-step instructions are in `docs/build_guide.md`.

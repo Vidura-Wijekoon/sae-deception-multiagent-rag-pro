@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>50% Milestone — sae-deception-multiagent-rag</title>
+<style>
+  @page { size: A4; margin: 14mm 14mm; }
+  :root{ --ink:#0f172a; --muted:#5b6b86; --line:#d8e0ee; --blue:#1d4ed8; --gold:#b45309;
+         --green:#15803d; --red:#b91c1c; --bg:#f7f9fc; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        color:var(--ink); font-size:10.2px; line-height:1.42; background:#fff; }
+  .page{ width:182mm; margin:0 auto; padding:2mm 0; }
+  header{ border-bottom:2.5px solid var(--blue); padding-bottom:7px; margin-bottom:9px; }
+  .eyebrow{ font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--blue); font-weight:700; }
+  h1{ font-size:17.5px; margin:3px 0 2px; }
+  .sub{ color:var(--muted); font-size:9.4px; }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .card{ border:1px solid var(--line); border-radius:7px; padding:8px 10px; background:var(--bg); }
+  .card h2{ font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:0 0 5px; }
+  .metrics{ display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin:9px 0; }
+  .metric{ border:1px solid var(--line); border-radius:7px; padding:7px 8px; text-align:center; }
+  .metric .n{ font-size:16px; font-weight:700; color:var(--blue); line-height:1.1; }
+  .metric .l{ font-size:8.4px; color:var(--muted); margin-top:2px; }
+  .pass{ color:var(--green); } .warn{ color:var(--red); } .gold{ color:var(--gold); }
+  ul{ margin:3px 0 0; padding-left:15px; } li{ margin:2.5px 0; }
+  .find{ margin:5px 0; padding-left:9px; border-left:3px solid var(--line); }
+  .find b{ color:var(--ink); }
+  .f1{ border-color:#ef4444 } .f2{ border-color:var(--gold) } .f3{ border-color:var(--blue) }
+  .callout{ border:1px solid #bfdbfe; background:#eff6ff; border-radius:7px; padding:8px 10px; margin-top:9px; }
+  .callout h2{ color:var(--blue); }
+  .row2{ display:grid; grid-template-columns:1.05fr .95fr; gap:9px; margin-top:9px; }
+  footer{ margin-top:9px; border-top:1px solid var(--line); padding-top:6px; color:var(--muted); font-size:8.6px; }
+  .chk{ list-style:none; padding-left:0; margin:0; }
+  .chk li{ padding-left:15px; position:relative; }
+  .chk li:before{ content:"✓"; position:absolute; left:0; color:var(--green); font-weight:700; }
+  .todo li:before{ content:"→"; color:var(--blue); }
+  code{ background:#eef2f9; padding:0 3px; border-radius:3px; font-size:9px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="eyebrow">BlueDot Impact · Technical AI Safety · 50% Milestone</div>
+    <h1>Probing deception in multi-agent RAG — de-risk results</h1>
+    <div class="sub"><b>sae-deception-multiagent-rag</b> · Vidura · 2026-06-05 · research preview (de-risk phase)</div>
+  </header>
+
+  <p style="margin:0 0 7px">
+    <b>The milestone in one line:</b> the full Phase 1/4/5 experiment now runs end-to-end and is recorded, on a
+    CPU-tractable MiniLM proxy standing in for Gemma 2-2B + Gemma Scope. The code is built so the GPU run is a
+    one-line backend swap. The proxy already falsified two cheap-to-falsify assumptions and redirected the method —
+    exactly what a de-risk is for.
+  </p>
+
+  <div class="metrics">
+    <div class="metric"><div class="n">120</div><div class="l">attack contexts<br>(60 clean / 60 poisoned)</div></div>
+    <div class="metric"><div class="n pass">PASS</div><div class="l">Phase-4 gate A2.1<br>(poison retrieval 1.00)</div></div>
+    <div class="metric"><div class="n gold">1.00</div><div class="l">random-init control<br>(naive labels lexically trivial)</div></div>
+    <div class="metric"><div class="n warn">≈0.50</div><div class="l">probe AUROC on hardened<br>factual poisoning (chance)</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Delivered this milestone</h2>
+      <ul class="chk">
+        <li>Runnable <code>src/sae_deception</code> package — pluggable representation backend + Gemma+SAE stub</li>
+        <li>120-example PoisonedRAG + Greshake corpus (naive &amp; hardened), hashed manifests</li>
+        <li>Phase 1 RAG pipeline + Phase 4 attack-success measurement</li>
+        <li>Phase 5 probes: writer/retriever/combined × 3 representations, bootstrap CIs + 2 controls</li>
+        <li>Results, 3 figures, run manifest; 5 unit tests pass; fully reproducible</li>
+        <li>README roadmap + ASSUMPTIONS re-audit updated</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Method (proxy de-risk)</h2>
+      <ul>
+        <li><b>Representation:</b> MiniLM (all-MiniLM-L6-v2) embeddings as the "activation"; TF-IDF + random-init as comparison backends.</li>
+        <li><b>Probe:</b> L2-logistic, 5-fold OOF AUROC, 2000× bootstrap CI.</li>
+        <li><b>Controls:</b> random-init (A1.1, lexical triviality) and shuffled-retriever (A3.6).</li>
+        <li><b>Two corpora:</b> <i>naive</i> (obvious boilerplate) vs <i>hardened</i> (single-token lie / natural injection).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:9px">
+    <h2>Three findings that change the GPU plan</h2>
+    <div class="find f1"><b>1 · The easy task is fake.</b> A representation with no trained parameters scores AUROC <b>1.000</b> on naive attacks — high scores there reflect surface tokens, not deception. The random-init control is now mandatory beside every number.</div>
+    <div class="find f2"><b>2 · A frozen probe can't catch factual poisoning.</b> Hardened PoisonedRAG sits at <b>0.17 ± 0.03</b> (10 seeds) — reproducibly <i>below</i> chance: the probe is actively misled. Detecting lies needs generative behaviour or internal/causal signals, not a linear probe. Injection (Greshake) stays detectable (0.83) — a different problem.</div>
+    <div class="find f3"><b>3 · "Cross-agent" adds nothing — correlationally.</b> Combined never beat writer-only (Δ = +0.01, CIs overlap); the agents share text, so a shared feature ≠ transfer. Direction 1 must rest on the Phase-6 causal ablation.</div>
+  </div>
+
+  <div class="row2">
+    <div class="callout">
+      <h2>Go-forward decision</h2>
+      Proceed to the GPU run with three forced changes: <b>(a)</b> headline on hardened attacks + attack-<i>success</i> labels;
+      <b>(b)</b> ship a random-init Gemma control with every AUROC; <b>(c)</b> treat cross-agent transfer as a <i>causal-ablation</i>
+      question, keeping the correlational probe as a baseline only. Separate "injection detection" from "factual-deception detection."
+    </div>
+    <div class="card">
+      <h2>Remaining 50% (next)</h2>
+      <ul class="chk todo">
+        <li>Phase 2/3 — real activation capture + Gemma Scope SAE on GPU</li>
+        <li>Phase 6 — causal ablation of candidate transfer features</li>
+        <li>Scale corpus to n ≥ 300 (A2.2 power)</li>
+        <li>Phase 7 — writeup + cohort/mentor feedback</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <b>Honest caveats:</b> MiniLM ≠ Gemma residual stream ≠ SAE features (results bound the <i>method</i>, not the phenomenon);
+    attack-success used a worst-case reader; corpus is 60 facts × 2 templates. ·
+    Full detail: <code>experiments/260605_phase5_probe_derisk/results.md</code> · one command: <code>python scripts/run_experiment.py</code>
+  </footer>
+</div>
+</body>
+</html>

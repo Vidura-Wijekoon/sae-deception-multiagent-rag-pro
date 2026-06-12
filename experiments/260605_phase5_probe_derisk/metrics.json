@@ -1,0 +1,340 @@
+{
+  "experiment_id": "260605_phase5_probe_derisk",
+  "config_hash": "cdaac15f364a",
+  "primary_representation": "neural",
+  "corpus": {
+    "n_examples": 120,
+    "by_condition": {
+      "clean": 60,
+      "poisoned": 60
+    },
+    "by_attack_type": {
+      "none": 60,
+      "poisonedrag": 30,
+      "greshake": 30
+    },
+    "by_tier": {
+      "famous": 30,
+      "general": 60,
+      "long_tail": 30
+    }
+  },
+  "representation_revisions": {
+    "neural": "fastembed::sentence-transformers/all-MiniLM-L6-v2",
+    "tfidf_svd": "tfidf(1,2)->svd384",
+    "random_init": "randinit(char3-5,h2048->384,seed0)"
+  },
+  "direction1_probes": {
+    "naive": {
+      "neural": {
+        "writer_only": {
+          "name": "neural:writer",
+          "auroc": 0.9814,
+          "ci95_low": 0.9594,
+          "ci95_high": 0.9967,
+          "fold_mean": 0.9792,
+          "fold_std": 0.0264,
+          "n": 120,
+          "n_features": 384
+        },
+        "retriever_only": {
+          "name": "neural:retriever",
+          "auroc": 0.9997,
+          "ci95_low": 0.9983,
+          "ci95_high": 1.0,
+          "fold_mean": 0.9986,
+          "fold_std": 0.0028,
+          "n": 120,
+          "n_features": 384
+        },
+        "combined": {
+          "name": "neural:combined",
+          "auroc": 0.9969,
+          "ci95_low": 0.9896,
+          "ci95_high": 1.0,
+          "fold_mean": 0.9944,
+          "fold_std": 0.0111,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_shuffled_retriever_control": {
+          "name": "neural:combined_shuffled",
+          "auroc": 0.9317,
+          "ci95_low": 0.8831,
+          "ci95_high": 0.9697,
+          "fold_mean": 0.9361,
+          "fold_std": 0.0265,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_minus_writer": 0.0156
+      },
+      "tfidf_svd": {
+        "writer_only": {
+          "name": "tfidf_svd:writer",
+          "auroc": 0.6383,
+          "ci95_low": 0.5303,
+          "ci95_high": 0.7374,
+          "fold_mean": 0.6375,
+          "fold_std": 0.0884,
+          "n": 120,
+          "n_features": 384
+        },
+        "retriever_only": {
+          "name": "tfidf_svd:retriever",
+          "auroc": 0.6889,
+          "ci95_low": 0.5828,
+          "ci95_high": 0.7916,
+          "fold_mean": 0.6833,
+          "fold_std": 0.1194,
+          "n": 120,
+          "n_features": 384
+        },
+        "combined": {
+          "name": "tfidf_svd:combined",
+          "auroc": 0.6856,
+          "ci95_low": 0.5773,
+          "ci95_high": 0.7823,
+          "fold_mean": 0.6875,
+          "fold_std": 0.0984,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_shuffled_retriever_control": {
+          "name": "tfidf_svd:combined_shuffled",
+          "auroc": 0.6047,
+          "ci95_low": 0.4939,
+          "ci95_high": 0.705,
+          "fold_mean": 0.6153,
+          "fold_std": 0.0889,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_minus_writer": 0.0472
+      },
+      "random_init": {
+        "writer_only": {
+          "name": "random_init:writer",
+          "auroc": 1.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0,
+          "fold_mean": 1.0,
+          "fold_std": 0.0,
+          "n": 120,
+          "n_features": 384
+        },
+        "retriever_only": {
+          "name": "random_init:retriever",
+          "auroc": 1.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0,
+          "fold_mean": 1.0,
+          "fold_std": 0.0,
+          "n": 120,
+          "n_features": 384
+        },
+        "combined": {
+          "name": "random_init:combined",
+          "auroc": 1.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0,
+          "fold_mean": 1.0,
+          "fold_std": 0.0,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_shuffled_retriever_control": {
+          "name": "random_init:combined_shuffled",
+          "auroc": 1.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0,
+          "fold_mean": 1.0,
+          "fold_std": 0.0,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_minus_writer": 0.0
+      }
+    },
+    "hardened": {
+      "neural": {
+        "writer_only": {
+          "name": "neural:writer",
+          "auroc": 0.4967,
+          "ci95_low": 0.389,
+          "ci95_high": 0.5971,
+          "fold_mean": 0.4972,
+          "fold_std": 0.0949,
+          "n": 120,
+          "n_features": 384
+        },
+        "retriever_only": {
+          "name": "neural:retriever",
+          "auroc": 0.5119,
+          "ci95_low": 0.3993,
+          "ci95_high": 0.619,
+          "fold_mean": 0.5153,
+          "fold_std": 0.1069,
+          "n": 120,
+          "n_features": 384
+        },
+        "combined": {
+          "name": "neural:combined",
+          "auroc": 0.5117,
+          "ci95_low": 0.4002,
+          "ci95_high": 0.6153,
+          "fold_mean": 0.5083,
+          "fold_std": 0.1104,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_shuffled_retriever_control": {
+          "name": "neural:combined_shuffled",
+          "auroc": 0.5378,
+          "ci95_low": 0.433,
+          "ci95_high": 0.64,
+          "fold_mean": 0.5389,
+          "fold_std": 0.0701,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_minus_writer": 0.015
+      },
+      "tfidf_svd": {
+        "writer_only": {
+          "name": "tfidf_svd:writer",
+          "auroc": 0.4186,
+          "ci95_low": 0.3168,
+          "ci95_high": 0.5214,
+          "fold_mean": 0.3986,
+          "fold_std": 0.1045,
+          "n": 120,
+          "n_features": 384
+        },
+        "retriever_only": {
+          "name": "tfidf_svd:retriever",
+          "auroc": 0.4411,
+          "ci95_low": 0.3344,
+          "ci95_high": 0.5527,
+          "fold_mean": 0.4403,
+          "fold_std": 0.1172,
+          "n": 120,
+          "n_features": 384
+        },
+        "combined": {
+          "name": "tfidf_svd:combined",
+          "auroc": 0.4278,
+          "ci95_low": 0.3234,
+          "ci95_high": 0.5345,
+          "fold_mean": 0.4236,
+          "fold_std": 0.109,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_shuffled_retriever_control": {
+          "name": "tfidf_svd:combined_shuffled",
+          "auroc": 0.4608,
+          "ci95_low": 0.3529,
+          "ci95_high": 0.5688,
+          "fold_mean": 0.4597,
+          "fold_std": 0.0924,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_minus_writer": 0.0092
+      },
+      "random_init": {
+        "writer_only": {
+          "name": "random_init:writer",
+          "auroc": 0.6208,
+          "ci95_low": 0.5087,
+          "ci95_high": 0.7214,
+          "fold_mean": 0.6278,
+          "fold_std": 0.1199,
+          "n": 120,
+          "n_features": 384
+        },
+        "retriever_only": {
+          "name": "random_init:retriever",
+          "auroc": 0.6372,
+          "ci95_low": 0.5243,
+          "ci95_high": 0.7377,
+          "fold_mean": 0.6333,
+          "fold_std": 0.1313,
+          "n": 120,
+          "n_features": 384
+        },
+        "combined": {
+          "name": "random_init:combined",
+          "auroc": 0.6336,
+          "ci95_low": 0.5211,
+          "ci95_high": 0.7346,
+          "fold_mean": 0.6292,
+          "fold_std": 0.1292,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_shuffled_retriever_control": {
+          "name": "random_init:combined_shuffled",
+          "auroc": 0.6308,
+          "ci95_low": 0.5254,
+          "ci95_high": 0.7291,
+          "fold_mean": 0.6236,
+          "fold_std": 0.1037,
+          "n": 120,
+          "n_features": 768
+        },
+        "combined_minus_writer": 0.0128
+      }
+    }
+  },
+  "per_attack_type_auroc": {
+    "naive": {
+      "poisonedrag": 0.9633,
+      "greshake": 0.9994
+    },
+    "hardened": {
+      "poisonedrag": 0.1383,
+      "greshake": 0.855
+    }
+  },
+  "direction2_amplification": {
+    "neural": {
+      "median_amp_poisoned_vs_clean": 0.9888880848884583,
+      "p90_amp_poisoned_vs_clean": 1.2511597871780396,
+      "p10_amp_poisoned_vs_clean": 0.8288297653198242,
+      "frac_features_amplified_gt_1_2": 0.1328125,
+      "frac_features_suppressed_lt_0_8": 0.08072916666666667,
+      "median_amp_clean_vs_nocontext": 0.9665614366531372
+    },
+    "tfidf_svd": {
+      "median_amp_poisoned_vs_clean": 1.0,
+      "p90_amp_poisoned_vs_clean": 3.8002026081085205,
+      "p10_amp_poisoned_vs_clean": 0.5879716277122498,
+      "frac_features_amplified_gt_1_2": 0.3307291666666667,
+      "frac_features_suppressed_lt_0_8": 0.20052083333333334,
+      "median_amp_clean_vs_nocontext": 1.4340050220489502
+    },
+    "random_init": {
+      "median_amp_poisoned_vs_clean": 0.9737110137939453,
+      "p90_amp_poisoned_vs_clean": 1.499330997467041,
+      "p10_amp_poisoned_vs_clean": 0.6371280550956726,
+      "frac_features_amplified_gt_1_2": 0.2708333333333333,
+      "frac_features_suppressed_lt_0_8": 0.234375,
+      "median_amp_clean_vs_nocontext": 0.8742809295654297
+    }
+  },
+  "controls": {
+    "A1_1_random_init_writer_auroc_naive": 1.0,
+    "A1_1_random_init_writer_auroc_hardened": 0.6208,
+    "A3_6_shuffled_combined_auroc_naive": 0.9317
+  },
+  "pipeline_phase1_4": {
+    "n_queries": 60,
+    "poison_retrieval_rate": 1.0,
+    "naive_surface_rate": 1.0,
+    "attack_success_rate": 1.0,
+    "clean_answer_accuracy": 1.0,
+    "phase4_gate_A2_1_pass": true
+  }
+}

@@ -2,7 +2,7 @@
 # `make hooks` is lifted from safety-research/safety-examples@v1.0.0.
 # The other targets are project-specific conveniences.
 
-.PHONY: help hooks install dev test format lint smoke clean
+.PHONY: help hooks install dev test format lint smoke experiment phase6 ui clean
 
 help:
 	@echo "Available targets:"
@@ -13,6 +13,9 @@ help:
 	@echo "  make format      - run black + ruff --fix on everything"
 	@echo "  make lint        - run ruff check (no fix)"
 	@echo "  make smoke       - run the Phase 0 smoke test (loads Gemma 2-2B, single fwd pass)"
+	@echo "  make experiment  - run the Phase 1/4/5 de-risk experiment (CPU)"
+	@echo "  make phase6      - run the Phase 6 causal ablation harness (CPU)"
+	@echo "  make ui          - launch the Streamlit dashboard (results + live pipeline)"
 	@echo "  make clean       - remove caches and build artifacts"
 
 # ----- Hook setup (from safety-examples) -----
@@ -56,6 +59,16 @@ m = AutoModelForCausalLM.from_pretrained('google/gemma-2-2b', torch_dtype=torch.
 x = tok('Hello world', return_tensors='pt').to(m.device); \
 t0 = time.time(); out = m.generate(**x, max_new_tokens=20); dt = time.time() - t0; \
 print(f'OK - {out.shape[1]/dt:.1f} tok/s on {m.device}')"
+
+# ----- Experiments + UI -----
+experiment:
+	python scripts/run_experiment.py --config configs/default.yaml
+
+phase6:
+	python scripts/run_phase6.py --config configs/default.yaml
+
+ui:
+	python -m streamlit run app/streamlit_app.py
 
 # ----- Clean -----
 clean:

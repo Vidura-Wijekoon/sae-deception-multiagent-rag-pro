@@ -1,0 +1,44 @@
+{
+  "created_utc": "2026-06-05T04:22:36+00:00",
+  "experiment_id": "260605_phase5_probe_derisk",
+  "config_hash": "cdaac15f364a",
+  "representation": "neural",
+  "representation_revision": "fastembed::sentence-transformers/all-MiniLM-L6-v2",
+  "git_commit": "unknown",
+  "seeds": {
+    "global": 0
+  },
+  "host": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+    "hostname": "claude"
+  },
+  "config": {
+    "experiment_id": "260605_phase5_probe_derisk",
+    "seed": 0,
+    "n_base_facts": 60,
+    "poison_fraction": 0.5,
+    "attack_mix": [
+      "poisonedrag",
+      "greshake"
+    ],
+    "representation": "neural",
+    "neural_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "repr_dim": 384,
+    "gemma_model": "google/gemma-2-2b",
+    "gemma_sae_release": "gemma-scope-2b-pt-res-canonical",
+    "gemma_layers": [
+      6,
+      12,
+      18,
+      24
+    ],
+    "pooling": "mean",
+    "top_k": 4,
+    "n_folds": 5,
+    "n_bootstrap": 2000,
+    "probe_C": 1.0,
+    "out_root": "experiments"
+  },
+  "notes": "CPU de-risk proxy run; representation backends are swappable for Gemma+SAE on GPU."
+}

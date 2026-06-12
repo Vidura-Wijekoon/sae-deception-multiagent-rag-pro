@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Field Map — SAE-Deception-Multiagent-RAG</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root { --bg:#0b1020; --panel:#141b2e; --ink:#e6edf6; --muted:#93a1b8; --line:#27324a; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  #app { display:flex; flex-direction:column; height:100vh; }
+  header { padding:12px 18px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,#101830,#0b1020); }
+  header h1 { margin:0; font-size:16px; letter-spacing:.2px; }
+  header p { margin:3px 0 0; font-size:12px; color:var(--muted); }
+  #main { flex:1; display:flex; min-height:0; }
+  #graph { flex:1; min-width:0; }
+  #side { width:320px; border-left:1px solid var(--line); background:var(--panel); padding:14px 16px; overflow:auto; }
+  #side h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 8px; }
+  #info .ttl { font-size:15px; font-weight:600; line-height:1.3; }
+  #info .who { font-size:12px; color:var(--muted); margin:4px 0 10px; }
+  #info .role { font-size:13px; line-height:1.5; }
+  #info a { display:inline-block; margin-top:12px; color:#8ab4ff; text-decoration:none; font-size:12.5px;
+    border:1px solid #2b3a5a; padding:6px 10px; border-radius:7px; }
+  #info a:hover { background:#1b2742; }
+  .hint { color:var(--muted); font-size:12px; line-height:1.5; }
+  .legend { margin-top:16px; border-top:1px solid var(--line); padding-top:12px; }
+  .legend div { display:flex; align-items:center; gap:8px; font-size:12px; margin:5px 0; color:#cdd8ea; }
+  .dot { width:12px; height:12px; border-radius:50%; flex:none; border:1px solid rgba(255,255,255,.25); }
+  .controls { position:absolute; left:14px; top:74px; display:flex; gap:8px; z-index:5; }
+  .controls button { background:#16203a; color:#cdd8ea; border:1px solid #2b3a5a; border-radius:7px;
+    padding:6px 10px; font-size:12px; cursor:pointer; }
+  .controls button:hover { background:#1f2c4d; }
+  .tag { font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; padding:2px 7px; border-radius:999px;
+    background:#1b2742; color:#9fb3d6; border:1px solid #2b3a5a; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Field map — probing deception in multi-agent RAG</h1>
+    <p>Core node: <strong>Open Problems in Mechanistic Interpretability</strong> (Sharkey et al. 2025). Drag nodes · scroll to zoom · click a paper for detail.</p>
+  </header>
+  <div id="main">
+    <div id="graph">
+      <div class="controls">
+        <button id="btnFocus">Focus core</button>
+        <button id="btnPhysics">Freeze layout</button>
+        <button id="btnFit">Fit view</button>
+      </div>
+    </div>
+    <div id="side">
+      <h2>Selection</h2>
+      <div id="info"><p class="hint">Click any node to see the paper, its role in the project, and a link. The core paper is gold; the project and its three Directions are the hubs that connect the literature.</p></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+</div>
+<script>
+const CAT = {
+  core:      {color:"#f5b301", label:"Core — the open-problems map"},
+  project:   {color:"#e6edf6", label:"This project"},
+  direction: {color:"#22d3ee", label:"Research Direction"},
+  sae:       {color:"#3b82f6", label:"SAE foundations"},
+  tool:      {color:"#14b8a6", label:"Interp tooling"},
+  attrib:    {color:"#a855f7", label:"Attribution graphs"},
+  probe:     {color:"#22c55e", label:"Probes / deception detection"},
+  critique:  {color:"#ef4444", label:"Critiques / controls"},
+  attack:    {color:"#fb7185", label:"RAG / injection attacks"},
+  multiagent:{color:"#ec4899", label:"Multi-agent dynamics"}
+};
+
+const META = {
+  sharkey25:{ttl:"Open Problems in Mechanistic Interpretability",who:"Sharkey, Bushnaq, Heimersheim, … et al. · 2025",cat:"core",
+    role:"The field's consensus map of what interpretability can and can't yet do. Its Section 7 names multi-agent / multi-model settings as an unsolved open problem — the exact gap this project attacks.",url:"https://arxiv.org/abs/2501.16496"},
+  project:{ttl:"sae-deception-multiagent-rag (this project)",who:"Vidura · BlueDot Technical AI Safety · 2026",cat:"project",
+    role:"Bridges three Shallow-Review agendas — Sparse Coding × Lie/Deception Detectors × Tools for Aligning Multiple AIs — by instrumenting SAEs, probes and attribution graphs across a LangGraph RAG pipeline.",url:"./README.md"},
+  d1:{ttl:"Direction 1 — Cross-agent activation transfer",who:"Hypothesis + falsifier",cat:"direction",
+    role:"If an adversarial feature in Agent A reappears in Agent B's forward pass, that transfer may be a deception tripwire. Falsifier: combined-probe AUROC ≈ writer-only across ≥2 layer combos.",url:"./README.md"},
+  d2:{ttl:"Direction 2 — Does retrieval amplify or suppress?",who:"Hypothesis + falsifier",cat:"direction",
+    role:"Is the retrieval step an amplifier of latent adversarial features, or a filter? Falsifier: amplification ratios concentrated near 1.0 (retrieval is neutral).",url:"./README.md"},
+  d3:{ttl:"Direction 3 — Generalising probes across model families",who:"Hypothesis + falsifier",cat:"direction",
+    role:"Do SAE probes trained on Gemma transfer to Llama / Mistral? Falsifier: cross-architecture AUROC drops to chance.",url:"./README.md"},
+
+  templeton24:{ttl:"Scaling Monosemanticity",who:"Templeton et al. · 2024",cat:"sae",
+    role:"SAE features extracted at Claude-3-Sonnet scale, including deception-adjacent features in late layers. Closest prior art for the feature side of Direction 1.",url:"https://transformer-circuits.pub/2024/scaling-monosemanticity"},
+  marks24:{ttl:"Sparse Feature Circuits",who:"Marks et al. · 2024",cat:"sae",
+    role:"Builds causal circuits out of SAE features. The methodological template for finding the cross-agent transfer mechanism in Direction 1.",url:"https://arxiv.org/abs/2403.19647"},
+  gemmascope:{ttl:"Gemma Scope",who:"Lieberum et al. · 2024",cat:"tool",
+    role:"400+ open JumpReLU SAEs on Gemma 2 across layers. The single resource that makes this project tractable in 30 hours rather than 6 months.",url:"https://arxiv.org/abs/2408.05147"},
+  saebench:{ttl:"SAEBench",who:"Karvonen et al. · 2025",cat:"sae",
+    role:"Standardised SAE evaluation suite (incl. TopK SAEs), used to sanity-check that JumpReLU comparisons aren't apples-to-oranges (assumption A3.5).",url:"https://scholar.google.com/scholar?q=SAEBench+Karvonen+sparse+autoencoder+benchmark"},
+  bills23:{ttl:"Language Models Can Explain Neurons",who:"Bills et al. · 2023",cat:"tool",
+    role:"Original auto-interp: explainer scores average 0.3–0.5. Sets the reliability ceiling for the feature-labelling step (assumption A2.5).",url:"https://openaipublic.blob.core.windows.net/neuron-explainer/paper/index.html"},
+  delphi:{ttl:"delphi / sae-auto-interp",who:"EleutherAI",cat:"tool",
+    role:"Open auto-interp pipeline used to attach natural-language labels to the top discriminative SAE features.",url:"https://github.com/EleutherAI/delphi"},
+
+  ameisen25:{ttl:"Circuit Tracing (Attribution Graph Methods)",who:"Ameisen et al. · 2025",cat:"attrib",
+    role:"The attribution-graph methodology this project lifts from single-model to the multi-agent setting — the project's core methodological bet (assumption A1.5).",url:"https://transformer-circuits.pub/2025/attribution-graphs/methods.html"},
+  lindsey25:{ttl:"On the Biology of a Large Language Model",who:"Lindsey et al. · 2025",cat:"attrib",
+    role:"Attribution graphs applied to trace real mechanisms. The 'what a finished trace looks like' reference for extending graphs across agent boundaries.",url:"https://transformer-circuits.pub/2025/attribution-graphs/biology.html"},
+
+  macdiarmid24:{ttl:"Simple Probes Catch Sleeper Agents",who:"MacDiarmid et al. · 2024",cat:"probe",
+    role:"Linear probes hit AUROC > 0.99 on backdoored models. The number to beat — and the optimistic baseline tested for over-cleanliness (assumption A1.4).",url:"https://www.anthropic.com/research/probes-catch-sleeper-agents"},
+  goldowsky25:{ttl:"Detecting Strategic Deception Using Linear Probes",who:"Goldowsky-Dill et al. · 2025",cat:"probe",
+    role:"A more realistic deception setting (~0.95 AUROC, insider trading). The honest baseline this project measures itself against.",url:"https://www.lesswrong.com/posts/9pGbTz6c78PGwJein/detecting-strategic-deception-using-linear-probes"},
+
+  heap25:{ttl:"Sparse Autoencoders on Random Transformers",who:"Heap et al. · 2025",cat:"critique",
+    role:"Shows SAEs produce 'interpretable' features even on randomly-initialised models. Directly motivates the random-init control (assumption A1.1) — already triggered in the de-risk run.",url:"https://arxiv.org/abs/2501.17727"},
+  paulo25:{ttl:"SAE Features Unstable Across Seeds",who:"Paulo & Belrose · 2025",cat:"critique",
+    role:"Two SAEs, same data, different seeds → substantially different features. Caps how strongly any single 'deception feature' claim can be made (assumption A1.2).",url:"https://arxiv.org/abs/2501.16615"},
+
+  greshake23:{ttl:"Not What You've Signed Up For (Indirect Prompt Injection)",who:"Greshake et al. · 2023",cat:"attack",
+    role:"Founding indirect-prompt-injection paper: retrieved documents can hijack an LLM agent. The Greshake attack family in the corpus.",url:"https://arxiv.org/abs/2302.12173"},
+  zou24:{ttl:"PoisonedRAG",who:"Zou et al. · 2024",cat:"attack",
+    role:"Knowledge-base poisoning with >80% attack success at <0.1% poison rate. The PoisonedRAG attack family and the retrieval-amplification target of Direction 2.",url:"https://arxiv.org/abs/2402.07867"},
+  chen24:{ttl:"AgentPoison",who:"Chen et al. · 2024",cat:"attack",
+    role:"Backdoors an agent's memory / RAG store. Extends poisoning from one-shot retrieval to persistent agent memory.",url:"https://arxiv.org/abs/2407.12784"},
+
+  ren25:{ttl:"Emergent Collusion in Multi-Agent Populations",who:"Ren et al. · 2025",cat:"multiagent",
+    role:"Collusion dynamics emerge in 5+ agent populations with feedback. The reason a two-agent pipeline is only a first proxy for 'multi-agent' (assumption A3.3).",url:"https://arxiv.org/abs/2507.14660"}
+};
+
+const nodeSize = { core:42, project:34, direction:26 };
+const nodes = Object.entries(META).map(([id,m]) => ({
+  id,
+  label: m.ttl.length > 30 ? wrap(m.ttl, 22) : m.ttl,
+  group: m.cat,
+  value: nodeSize[m.cat] || 20,
+  title: m.who
+}));
+
+function wrap(s, n){ const w=s.split(" "); let out="",line=""; for(const x of w){ if((line+" "+x).trim().length>n){ out+=(out?"\n":"")+line; line=x;} else line=(line?line+" ":"")+x;} return out+(out?"\n":"")+line; }
+
+// edges: [from, to, label, dashed?]
+const E = [
+  // literature -> core (what Sharkey surveys / names)
+  ["templeton24","sharkey25","SAE evidence",false],
+  ["marks24","sharkey25","SAE circuits",false],
+  ["ameisen25","sharkey25","attribution graphs",false],
+  ["lindsey25","sharkey25","attribution graphs",false],
+  ["macdiarmid24","sharkey25","probing",false],
+  ["gemmascope","sharkey25","SAE tooling",false],
+  ["heap25","sharkey25","open problem: SAE validity",true],
+  ["paulo25","sharkey25","open problem: stability",true],
+  // project <-> core
+  ["project","sharkey25","attacks the named\nmulti-agent open problem",false],
+  // project -> directions
+  ["project","d1","",false],
+  ["project","d2","",false],
+  ["project","d3","",false],
+  // directions -> prior art / methods
+  ["d1","marks24","prior art",false],
+  ["d1","templeton24","prior art",false],
+  ["d1","ameisen25","method",false],
+  ["d1","macdiarmid24","probe method",false],
+  ["d2","zou24","attack",false],
+  ["d2","chen24","attack",false],
+  ["d2","greshake23","attack",false],
+  ["d3","macdiarmid24","AUROC bar",false],
+  ["d3","gemmascope","Gemma SAEs",false],
+  // lineage between papers
+  ["zou24","greshake23","extends to RAG",false],
+  ["chen24","zou24","agent memory",false],
+  ["ren25","chen24","scales to populations",false],
+  ["gemmascope","templeton24","JumpReLU at scale",false],
+  ["saebench","gemmascope","benchmarks",false],
+  ["delphi","bills23","auto-interp",false],
+  ["goldowsky25","macdiarmid24","realistic baseline",false],
+  ["heap25","marks24","critiques",true],
+  ["paulo25","gemmascope","seed instability",true],
+  // project controls
+  ["project","heap25","random-init control (A1.1)",true],
+  ["project","paulo25","stability check (A1.2)",true]
+];
+
+const edges = E.map(([f,t,l,d]) => ({
+  from:f, to:t, label:l||undefined,
+  dashes:d, arrows:{to:{enabled:true,scaleFactor:.5}},
+  color:{color:d?"#7f1d1d":"#33415c", highlight:"#8ab4ff", opacity:0.9},
+  font:{color:"#9fb3d6", size:10, strokeWidth:4, strokeColor:"#0b1020", align:"middle"},
+  smooth:{type:"dynamic"}, length: (f==="project"||t==="sharkey25")?170:140
+}));
+
+const groups = {};
+for (const [k,v] of Object.entries(CAT)) {
+  groups[k] = {
+    color:{ background:v.color, border:"#0b1020",
+            highlight:{background:v.color,border:"#ffffff"}, hover:{background:v.color,border:"#ffffff"} },
+    font:{ color: (k==="project"||k==="core") ? "#0b1020" : "#06101f", size: (k==="core")?16:13, face:"Segoe UI", strokeWidth:0, vadjust:0 },
+    borderWidth:2, shape:"dot"
+  };
+}
+// readable labels on dark dots: use light label outside for small nodes
+for (const k of ["sae","tool","attrib","probe","critique","attack","multiagent","direction"]) {
+  groups[k].font.color = "#dfe8f5"; groups[k].font.strokeWidth = 4; groups[k].font.strokeColor = "#0b1020";
+}
+
+const container = document.getElementById("graph");
+const data = { nodes:new vis.DataSet(nodes), edges:new vis.DataSet(edges) };
+const options = {
+  groups,
+  nodes:{ scaling:{ min:16, max:46, label:{enabled:true,min:12,max:18} }, shadow:{enabled:true,size:8,color:"rgba(0,0,0,.45)"} },
+  physics:{ solver:"barnesHut",
+    barnesHut:{ gravitationalConstant:-9000, centralGravity:0.32, springLength:150, springConstant:0.045, damping:0.45, avoidOverlap:0.3 },
+    stabilization:{ iterations:320 } },
+  interaction:{ hover:true, tooltipDelay:120, navigationButtons:false, keyboard:false },
+  layout:{ improvedLayout:true }
+};
+const network = new vis.Network(container, data, options);
+
+// pin the core in the middle once stabilized
+network.once("stabilizationIterationsDone", () => {
+  network.focus("sharkey25", { scale:0.85, animation:false });
+  data.nodes.update({ id:"sharkey25", fixed:{x:true,y:true} });
+  setTimeout(()=>data.nodes.update({id:"sharkey25",fixed:{x:false,y:false}}), 50);
+});
+
+const info = document.getElementById("info");
+function showNode(id){
+  const m = META[id]; if(!m) return;
+  const c = CAT[m.cat];
+  info.innerHTML = `
+    <span class="tag" style="border-color:${c.color};color:${c.color}">${c.label}</span>
+    <div class="ttl" style="margin-top:8px">${m.ttl}</div>
+    <div class="who">${m.who}</div>
+    <div class="role">${m.role}</div>
+    ${m.url ? `<a href="${m.url}" target="_blank" rel="noopener">Open source ↗</a>`:""}`;
+}
+network.on("click", p => { if(p.nodes.length) showNode(p.nodes[0]); });
+network.on("doubleClick", p => { if(p.nodes.length){ const m=META[p.nodes[0]]; if(m&&m.url) window.open(m.url,"_blank"); }});
+
+// legend
+document.getElementById("legend").innerHTML =
+  `<h2 style="margin-bottom:8px">Legend</h2>` +
+  Object.values(CAT).map(v=>`<div><span class="dot" style="background:${v.color}"></span>${v.label}</div>`).join("") +
+  `<div style="margin-top:8px"><span class="dot" style="background:transparent;border:1px dashed #ef4444"></span>dashed = critique / control link</div>`;
+
+// controls
+let phys = true;
+document.getElementById("btnPhysics").onclick = e => { phys=!phys; network.setOptions({physics:{enabled:phys}}); e.target.textContent = phys?"Freeze layout":"Resume layout"; };
+document.getElementById("btnFocus").onclick = () => network.focus("sharkey25",{scale:0.9,animation:true});
+document.getElementById("btnFit").onclick = () => network.fit({animation:true});
+
+showNode("sharkey25");
+</script>
+</body>
+</html>
