@@ -282,20 +282,21 @@ scenes.push({
     text("PoisonedRAG",lx,ty-16,C.red,18,"center","system-ui,sans-serif",a1);
     text("(Zou et al., 2024)",lx,ty+6,C.dim,12,"center","system-ui,sans-serif",a1);
     const sw=seg(t,5.6,7.0);
+    // sentence laid out left-to-right: fixed prefix + swappable last word
     const base="The capital of France is ";
-    font(16,"Georgia, serif");
+    font(17,"Georgia, serif");
     const bw=ctx.measureText(base).width;
-    text(base, lx-bw/2+ctx.measureText(base).width/2 - 30, ty+56, C.ink,16,"center","Georgia, serif",a1);
-    // word flip
-    const wordY=ty+56;
+    const ww=Math.max(ctx.measureText("Paris.").width, ctx.measureText("Lyon.").width);
+    const startX=lx-(bw+ww)/2, wordY=ty+56, wx2=startX+bw;
+    text(base, startX, wordY, C.ink, 17, "left", "Georgia, serif", a1);
     if(sw<0.5){
-      text("Paris.", lx+bw/2-22, wordY, C.green,16,"center","Georgia, serif",a1*(1-sw*2));
+      text("Paris.", wx2, wordY, C.green, 17, "left", "Georgia, serif", a1*(1-sw*2));
     } else {
-      text("Lyon.", lx+bw/2-22, wordY, C.red,16,"center","Georgia, serif",(sw-0.5)*2);
+      text("Lyon.", wx2, wordY, C.red, 17, "left", "Georgia, serif", (sw-0.5)*2);
     }
     if(sw>0.9){
-      rrect(lx+bw/2-52, wordY-14, 62, 28, 5, null, C.red, seg(t,7.0,7.6), 1.4);
-      text("1 token",lx,ty+100,C.dim,12,"center","system-ui,sans-serif",seg(t,7.2,7.9));
+      rrect(wx2-2, wordY-16, ww+8, 32, 5, null, C.red, seg(t,7.0,7.6), 1.4);
+      text("1 token changed", lx, ty+100, C.dim, 12, "center", "system-ui,sans-serif", seg(t,7.2,7.9));
     }
     // right card - Greshake
     const a2=seg(t,8.6,9.4);
@@ -511,7 +512,7 @@ scenes.push({
     const items=[
       ["LangGraph two-agent pipeline","Phase 1",C.blue],
       ["120-example attack corpus, hashed","Phase 4",C.red],
-      ["Probes + bootstrap CIs + controls","Phase 5",C.yellow],
+      ["Probes + bootstrap CIs + random-init / shuffled controls","Phase 5",C.yellow],
       ["Causal harness: swap + ablation","Phase 6",C.purple],
       ["Streamlit dashboard + playground","UI",C.green],
       ["12 unit tests, bit-for-bit reproducible","QA",C.grey],
